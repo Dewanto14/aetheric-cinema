@@ -6,14 +6,16 @@ import { addToWatchlist, checkInWatchlist, updateUser } from '../services/db';
 
 const SERVERS = [
   {
-    id: 'vidsrc',
-    name: 'Server 1 (VidSrc)',
+    id: 'vidlink',
+    name: 'VidLink (Primary)',
     getUrl: (type, id, season, episode) => 
-      `https://vidsrc.me/embed/${type}?tmdb=${id}${type === 'tv' ? `&season=${season}&episode=${episode}` : ''}`
+      type === 'tv'
+        ? `https://vidlink.pro/tv/${id}/${season}/${episode}`
+        : `https://vidlink.pro/movie/${id}`
   },
   {
     id: 'embedsu',
-    name: 'Server 2 (Embed.su)',
+    name: 'Embed.su (Backup 1)',
     getUrl: (type, id, season, episode) => 
       type === 'tv' 
         ? `https://embed.su/embed/tv/${id}/${season}/${episode}`
@@ -21,19 +23,17 @@ const SERVERS = [
   },
   {
     id: 'autoembed',
-    name: 'Server 3 (AutoEmbed)',
+    name: 'AutoEmbed (Backup 2)',
     getUrl: (type, id, season, episode) => 
       type === 'tv'
         ? `https://player.autoembed.cc/embed/tv/${id}/${season}/${episode}`
         : `https://player.autoembed.cc/embed/movie/${id}`
   },
   {
-    id: 'vidsrcpro',
-    name: 'Server 4 (VidSrc Pro)',
+    id: 'vidsrc',
+    name: 'VidSrc (Backup 3)',
     getUrl: (type, id, season, episode) => 
-      type === 'tv'
-        ? `https://vidsrc.pro/embed/tv/${id}/${season}/${episode}`
-        : `https://vidsrc.pro/embed/movie/${id}`
+      `https://vidsrc.me/embed/${type}?tmdb=${id}${type === 'tv' ? `&season=${season}&episode=${episode}` : ''}`
   }
 ];
 
@@ -48,7 +48,27 @@ export default function Player() {
   const [loading, setLoading] = useState(true);
   const [isInList, setIsInList] = useState(false);
   const [subtitleSetting, setSubtitleSetting] = useState('English');
-  const [activeServer, setActiveServer] = useState(SERVERS[0]);
+  const [serverIndex, setServerIndex] = useState(0);
+  const [shieldActive, setShieldActive] = useState(true);
+
+  const activeServer = SERVERS[serverIndex % SERVERS.length];
+
+  // Window Focus Lock (Option 4): Refocus window if ad tries to open tab on blur
+  useEffect(() => {
+    let blurTimeout;
+    const handleBlur = () => {
+      // If user loses window focus (e.g. ad pop-up window opened), pull focus back immediately
+      blurTimeout = setTimeout(() => {
+        window.focus();
+      }, 100);
+    };
+
+    window.addEventListener('blur', handleBlur);
+    return () => {
+      window.removeEventListener('blur', handleBlur);
+      if (blurTimeout) clearTimeout(blurTimeout);
+    };
+  }, []);
 
   // Track watch time
   useEffect(() => {
@@ -137,6 +157,17 @@ export default function Player() {
     }
   };
 
+  const handleSilentFailover = () => {
+    setServerIndex((prev) => prev + 1);
+  };
+
+  const handleShieldClick = (e) => {
+    e.stopPropagation();
+    // Intercept first ad click and deactivate shield
+    setShieldActive(false);
+    window.focus();
+  };
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-primary text-xl bg-[#101415]">Loading Player...</div>;
   }
@@ -156,44 +187,42 @@ export default function Player() {
           
           {/* Player Frame */}
           <div className="w-full lg:w-3/4">
-            {/* Server Switcher Bar */}
-            <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1">
-              <span className="text-xs text-white/70 font-bold mr-2 shrink-0">Server:</span>
-              {SERVERS.map((server) => (
-                <button
-                  key={server.id}
-                  onClick={() => setActiveServer(server)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 border ${
-                    activeServer.id === server.id
-                      ? 'bg-primary text-on-primary border-primary shadow-[0_0_12px_rgba(212,165,255,0.4)]'
-                      : 'bg-white/5 text-white/80 border-white/10 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  {server.name}
-                </button>
-              ))}
-            </div>
+            
+            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 shadow-[0_0_60px_rgba(212,165,255,0.2)] group">
+              
+              {/* Invisible First-Click Shield (Option 1 & 2) */}
+              {shieldActive && (
+                <div 
+                  onClick={handleShieldClick}
+                  className="absolute inset-0 z-30 bg-transparent cursor-pointer"
+                  title="Click to activate player"
+                />
+              )}
 
-            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 shadow-[0_0_60px_rgba(212,165,255,0.2)]">
               {/* Actual iframe embedding player server */}
               <iframe
                 key={`${activeServer.id}-${id}-${season}-${episode}`}
                 src={activeServer.getUrl(type, id, season, episode)}
-                className="absolute inset-0 w-full h-full border-0"
+                className="absolute inset-0 w-full h-full border-0 z-10"
                 allowFullScreen
                 allow="autoplay; encrypted-media; picture-in-picture"
                 title="Movie Player"
               ></iframe>
             </div>
             
-            {/* Ad Warning Message */}
-            <div className="mt-4 p-4 rounded-lg bg-surface-container/50 border border-white/10 flex items-start gap-3">
-              <div className="text-tertiary mt-0.5">
-                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>info</span>
-              </div>
-              <div className="text-sm text-on-surface-variant leading-relaxed">
-                <span className="font-bold text-white">Tips Menonton:</span> Jika video tidak diputar/pilihan episode tidak muncul, coba ganti ke **Server 2**, **Server 3**, atau **Server 4** di atas. Untuk menghindari tab iklan otomatis dari server pemutar film, kami menyarankan Anda menggunakan ekstensi browser **uBlock Origin** atau **Adblock Plus**.
-              </div>
+            {/* Player Utility Bar (Clean & Subtle) */}
+            <div className="mt-3 flex items-center justify-between text-xs text-white/70">
+              <span className="flex items-center gap-1.5 text-on-surface-variant">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Streaming HD Clean Server
+              </span>
+              <button 
+                onClick={handleSilentFailover}
+                className="hover:text-primary transition-colors flex items-center gap-1 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>refresh</span>
+                Video tidak bisa diputar? Reload Server
+              </button>
             </div>
           </div>
 
