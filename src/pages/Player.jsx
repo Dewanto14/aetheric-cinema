@@ -4,17 +4,51 @@ import { getMovieDetails, getTVDetails, getImageUrl } from '../services/tmdb';
 import { Star, Plus, Share2, PlayCircle } from 'lucide-react';
 import { addToWatchlist, checkInWatchlist, updateUser } from '../services/db';
 
+const SERVERS = [
+  {
+    id: 'vidsrc',
+    name: 'Server 1 (VidSrc)',
+    getUrl: (type, id, season, episode) => 
+      `https://vidsrc.me/embed/${type}?tmdb=${id}${type === 'tv' ? `&season=${season}&episode=${episode}` : ''}`
+  },
+  {
+    id: 'embedsu',
+    name: 'Server 2 (Embed.su)',
+    getUrl: (type, id, season, episode) => 
+      type === 'tv' 
+        ? `https://embed.su/embed/tv/${id}/${season}/${episode}`
+        : `https://embed.su/embed/movie/${id}`
+  },
+  {
+    id: 'autoembed',
+    name: 'Server 3 (AutoEmbed)',
+    getUrl: (type, id, season, episode) => 
+      type === 'tv'
+        ? `https://player.autoembed.cc/embed/tv/${id}/${season}/${episode}`
+        : `https://player.autoembed.cc/embed/movie/${id}`
+  },
+  {
+    id: 'vidsrcpro',
+    name: 'Server 4 (VidSrc Pro)',
+    getUrl: (type, id, season, episode) => 
+      type === 'tv'
+        ? `https://vidsrc.pro/embed/tv/${id}/${season}/${episode}`
+        : `https://vidsrc.pro/embed/movie/${id}`
+  }
+];
+
 export default function Player() {
   const { id } = useParams();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get('type') || 'movie';
-  const season = searchParams.get('season');
-  const episode = searchParams.get('episode');
+  const season = searchParams.get('season') || 1;
+  const episode = searchParams.get('episode') || 1;
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isInList, setIsInList] = useState(false);
   const [subtitleSetting, setSubtitleSetting] = useState('English');
+  const [activeServer, setActiveServer] = useState(SERVERS[0]);
 
   // Track watch time
   useEffect(() => {
@@ -122,13 +156,32 @@ export default function Player() {
           
           {/* Player Frame */}
           <div className="w-full lg:w-3/4">
+            {/* Server Switcher Bar */}
+            <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1">
+              <span className="text-xs text-white/70 font-bold mr-2 shrink-0">Server:</span>
+              {SERVERS.map((server) => (
+                <button
+                  key={server.id}
+                  onClick={() => setActiveServer(server)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 border ${
+                    activeServer.id === server.id
+                      ? 'bg-primary text-on-primary border-primary shadow-[0_0_12px_rgba(212,165,255,0.4)]'
+                      : 'bg-white/5 text-white/80 border-white/10 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  {server.name}
+                </button>
+              ))}
+            </div>
+
             <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 shadow-[0_0_60px_rgba(212,165,255,0.2)]">
-              {/* Actual iframe embedding vidsrc with sandbox to prevent popups */}
+              {/* Actual iframe embedding player server */}
               <iframe
-                src={`https://vidsrc.me/embed/${type}?tmdb=${id}${type === 'tv' ? `&season=${season}&episode=${episode}` : ''}&sub=${subtitleSetting !== 'Off' ? 'on' : 'off'}&lang=${subtitleSetting}`}
+                key={`${activeServer.id}-${id}-${season}-${episode}`}
+                src={activeServer.getUrl(type, id, season, episode)}
                 className="absolute inset-0 w-full h-full border-0"
                 allowFullScreen
-                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+                allow="autoplay; encrypted-media; picture-in-picture"
                 title="Movie Player"
               ></iframe>
             </div>
@@ -139,7 +192,7 @@ export default function Player() {
                 <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>info</span>
               </div>
               <div className="text-sm text-on-surface-variant leading-relaxed">
-                <span className="font-bold text-white">Tips Anti Iklan:</span> Karena menggunakan server pihak ketiga, mungkin ada beberapa tombol yang sengaja dialihkan ke iklan. Kami sudah memblokir <i>pop-up</i> otomatis, tetapi kami tetap sangat merekomendasikan Anda untuk memasang ekstensi <b>uBlock Origin</b> atau <b>Adblock Plus</b> di browser Anda untuk pengalaman menonton yang 100% bersih.
+                <span className="font-bold text-white">Tips Menonton:</span> Jika video tidak diputar/pilihan episode tidak muncul, coba ganti ke **Server 2**, **Server 3**, atau **Server 4** di atas. Untuk menghindari tab iklan otomatis dari server pemutar film, kami menyarankan Anda menggunakan ekstensi browser **uBlock Origin** atau **Adblock Plus**.
               </div>
             </div>
           </div>
