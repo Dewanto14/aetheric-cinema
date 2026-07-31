@@ -18,20 +18,49 @@ export default function HelpCenter() {
   }, [chatMessages, isChatOpen]);
 
   const faqs = [
+    // Streaming & Quality
     {
       id: 1,
       question: "How do I change my streaming quality?",
-      answer: "To adjust your streaming quality, navigate to your Profile > Settings > Playback. You can select between Auto, 1080p, and 4K HDR depending on your current network connection."
+      answer: "To adjust your streaming quality, navigate to your Profile > Settings > Playback. You can select between Auto, 1080p, and 4K HDR depending on your current network connection. (Keywords: streaming, quality, resolution, playback, 4k, hd)"
     },
     {
       id: 2,
       question: "Can I download movies to watch offline?",
-      answer: "Yes, premium subscribers can download up to 50 titles for offline viewing. Look for the download icon (a downward arrow) on the movie details page. Downloads expire after 30 days or 48 hours after you press play."
+      answer: "Yes, premium subscribers can download up to 50 titles for offline viewing. Look for the download icon (a downward arrow) on the movie details page. (Keywords: download, offline, save)"
     },
     {
       id: 3,
       question: "Why is my video buffering constantly?",
-      answer: "Buffering usually indicates a slow internet connection. We recommend a minimum of 5 Mbps for HD streaming. Try restarting your router or switching to a lower video quality setting in the player controls."
+      answer: "Buffering usually indicates a slow internet connection. We recommend a minimum of 5 Mbps for HD streaming. Try restarting your router or switching to a lower video quality setting in the player controls. (Keywords: buffering, slow, lag, streaming, playback, support, technical)"
+    },
+    // Account & Profile
+    {
+      id: 4,
+      question: "How do I reset my password?",
+      answer: "If you forgot your password, go to the login page and click 'Forgot Password'. A reset link will be sent to your registered email address. You can also change it in Profile > Security. (Keywords: account, password, reset, login, profile, security)"
+    },
+    {
+      id: 5,
+      question: "How do I update my profile picture?",
+      answer: "Go to your Profile page and click the camera icon next to your avatar to upload a new image. (Keywords: account, profile, avatar, picture, image)"
+    },
+    // Subscription & Billing
+    {
+      id: 6,
+      question: "When is my billing cycle?",
+      answer: "Your billing cycle starts on the day you subscribe. You can view your exact billing date and past invoices by going to Profile > Subscription & Billing > Billing History. (Keywords: billing, cycle, invoice, subscription, history, payment)"
+    },
+    {
+      id: 7,
+      question: "How do I cancel or upgrade my subscription?",
+      answer: "To upgrade to Twilight Premium or cancel your current plan, go to your Profile and click on the 'Current Plan' card. (Keywords: subscription, upgrade, cancel, premium, billing, plan)"
+    },
+    // Technical Support
+    {
+      id: 8,
+      question: "The app crashes when I open it, what do I do?",
+      answer: "Please ensure you are using the latest version of your browser. Clearing your browser cache or trying an Incognito window often resolves this issue. (Keywords: technical, support, crash, bug, error)"
     }
   ];
 
