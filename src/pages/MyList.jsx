@@ -106,25 +106,28 @@ export default function MyList() {
           <div className="text-primary animate-pulse">Loading your collection...</div>
         ) : (
           <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-card-gap">
-            {list.map((movie) => (
-              <div key={movie.movieId} className="group relative flex flex-col gap-3">
+            {list.map((movie) => {
+              const tmdbId = movie.movieId || movie.id;
+              const uniqueKey = movie.id + '-' + tmdbId; // ensure unique key
+              return (
+              <div key={uniqueKey} className="group relative flex flex-col gap-3">
                 <div className="relative aspect-[2/3] rounded-lg overflow-hidden glass bg-white/5 border border-white/10 bloom-hover transition-all duration-300">
                   <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" 
                        style={{ backgroundImage: `url('${getImageUrl(movie.poster_path, 'w500')}')` }}></div>
                   
                   {/* Overlay Controls */}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-[2px] flex flex-col items-center justify-center gap-4">
-                    <Link to={`/play/${movie.movieId}`} className="w-14 h-14 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-xl hover:scale-110 transition-transform">
+                    <Link to={`/play/${tmdbId}`} className="w-14 h-14 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-xl hover:scale-110 transition-transform">
                       <PlayCircle size={36} />
                     </Link>
-                    <Link to={`/${movie.media_type || 'movie'}/${movie.movieId}`} className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-xs font-bold border border-white/10 transition-colors flex items-center gap-2 text-white">
+                    <Link to={`/${movie.media_type || 'movie'}/${tmdbId}`} className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-xs font-bold border border-white/10 transition-colors flex items-center gap-2 text-white">
                       Details
                     </Link>
                   </div>
                   
                   {/* Top Actions */}
                   <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0 transition-transform">
-                    <button onClick={(e) => handleRemove(e, movie.movieId)} className="w-8 h-8 rounded-full bg-error-container/80 text-on-error-container backdrop-blur-lg flex items-center justify-center hover:bg-error transition-colors" title="Remove from list">
+                    <button onClick={(e) => handleRemove(e, tmdbId)} className="w-8 h-8 rounded-full bg-error-container/80 text-on-error-container backdrop-blur-lg flex items-center justify-center hover:bg-error transition-colors" title="Remove from list">
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -144,7 +147,7 @@ export default function MyList() {
                   </div>
                 </div>
               </div>
-            ))}
+            )})}
 
             {/* Add More Card */}
             <Link to="/" className="flex flex-col gap-3 group">
