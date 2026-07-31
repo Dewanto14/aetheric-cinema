@@ -29,6 +29,24 @@ export const getTotalUserCount = async () => {
   return 0;
 };
 
+export const getAllUsers = async () => {
+  if (isFirebaseConfigured()) {
+    try {
+      const coll = collection(db, 'users');
+      const snapshot = await getDocs(coll);
+      const users = [];
+      snapshot.forEach(doc => {
+        users.push({ id: doc.id, ...doc.data() });
+      });
+      return users;
+    } catch (e) {
+      console.error("Failed to get users", e);
+      return [];
+    }
+  }
+  return [];
+};
+
 export const submitContactMessage = async (name, email, message) => {
   if (isFirebaseConfigured()) {
     try {

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getContactMessages, getTotalUserCount } from '../services/db';
+import { getContactMessages, getTotalUserCount, getAllUsers } from '../services/db';
 
 export default function AdminDashboard() {
   const [messages, setMessages] = useState([]);
   const [userCount, setUserCount] = useState(0);
+  const [usersList, setUsersList] = useState([]);
+  const [showUsersModal, setShowUsersModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -25,9 +27,10 @@ export default function AdminDashboard() {
     const fetchData = async () => {
       try {
         const msgs = await getContactMessages();
-        const count = await getTotalUserCount();
+        const users = await getAllUsers();
         setMessages(msgs);
-        setUserCount(count);
+        setUsersList(users);
+        setUserCount(users.length);
       } catch (error) {
         console.error("Error fetching admin data", error);
       } finally {
@@ -46,14 +49,14 @@ export default function AdminDashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {/* Stats Cards */}
-          <div className="glass-panel-elevated p-6 rounded-2xl border border-primary/30 relative overflow-hidden group">
+          <div onClick={() => setShowUsersModal(true)} className="glass-panel-elevated p-6 rounded-2xl border border-primary/30 relative overflow-hidden group cursor-pointer hover:border-primary/60 transition-colors">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-primary/40 transition-colors"></div>
             <div className="flex items-center gap-4 relative z-10">
               <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
                 <span className="material-symbols-outlined text-primary text-2xl">group</span>
               </div>
               <div>
-                <p className="text-on-surface-variant text-sm font-bold uppercase tracking-wider">Total Registered Users</p>
+                <p className="text-on-surface-variant text-sm font-bold uppercase tracking-wider flex items-center gap-2">Total Registered Users <span className="material-symbols-outlined text-[14px]">open_in_new</span></p>
                 <div className="flex items-end gap-2">
                   <p className="font-display-lg text-4xl text-white font-bold">{isLoading ? '...' : userCount}</p>
                   <p className="text-xs text-on-surface-variant mb-1">/ 200 Limit</p>
@@ -111,6 +114,50 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Users Modal */}
+        {showUsersModal && (
+          <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-all duration-300">
+            <div className="glass-panel-elevated w-full max-w-2xl max-h-[80vh] rounded-2xl p-8 relative flex flex-col border border-primary/30 shadow-[0_0_80px_rgba(212,165,255,0.2)] animate-in fade-in zoom-in-95">
+              <button onClick={() => setShowUsersModal(false)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-on-surface-variant hover:text-white transition-colors">
+                <span className="material-symbols-outlined text-xl">close</span>
+              </button>
+              
+              <div className="mb-6 border-b border-white/10 pb-4">
+                <h3 className="font-display-lg text-2xl font-bold text-primary flex items-center gap-3">
+                  <span className="material-symbols-outlined">group</span>
+                  Registered Users Directory
+                </h3>
+                <p className="text-on-surface-variant text-sm mt-1">Total: {userCount} / 200 users</p>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
+                {usersList.length === 0 ? (
+                  <p className="text-center text-on-surface-variant py-8">No users found.</p>
+                ) : (
+                  usersList.map((u, index) => (
+                    <div key={u.id || index} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 hover:bg-white/10 transition-colors">
+                      <div className="w-10 h-10 rounded-full bg-primary/20 overflow-hidden shrink-0 border border-primary/50">
+                        {u.avatar ? (
+                          <img src={u.avatar} alt={u.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-primary font-bold">{u.name?.charAt(0) || '?'}</div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-bold truncate">{u.name || 'Unknown Voyager'}</p>
+                        <p className="text-on-surface-variant text-xs truncate">{u.email}</p>
+                      </div>
+                      {u.email?.toLowerCase() === 'dewantomaulana14@gmail.com' && (
+                        <span className="px-2 py-1 bg-error/20 text-error rounded-md text-[10px] font-bold uppercase tracking-wider border border-error/30 shrink-0">Admin</span>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
         )}
 
