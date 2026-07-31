@@ -46,6 +46,15 @@
   .glass-input::placeholder {
     color: rgba(206, 195, 209, 0.6);
   }
+  
+  /* Prevent browser autofill from turning background white */
+  .glass-input:-webkit-autofill,
+  .glass-input:-webkit-autofill:hover, 
+  .glass-input:-webkit-autofill:focus, 
+  .glass-input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+    -webkit-text-fill-color: #e0e3e5 !important;
+  }
   .bloom-hover:hover {
     box-shadow: 0 0 20px 2px rgba(222, 183, 255, 0.3);
     transform: translateY(-4px);
