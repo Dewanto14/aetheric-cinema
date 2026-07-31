@@ -55,11 +55,11 @@ export default function Anime() {
   }, [selectedGenre]);
 
   const renderAnimeRow = (title, animes, subtext) => (
-    <section className="px-gutter mb-12">
-      <h2 className="font-headline-md text-headline-md mb-6">{title}</h2>
-      <CarouselContainer className="gap-card-gap pb-4 -mx-gutter px-gutter">
+    <section className="px-4 md:px-gutter lg:px-container-padding mb-12">
+      <h2 className="font-headline-md text-[20px] md:text-headline-md mb-6">{title}</h2>
+      <CarouselContainer className="gap-4 md:gap-card-gap pb-4 -mx-4 md:-mx-gutter lg:-mx-container-padding px-4 md:px-gutter lg:px-container-padding">
         {animes.map(show => (
-          <Link to={`/tv/${show.id}`} key={show.id} className="min-w-[200px] w-[200px] group cursor-pointer block">
+          <Link to={`/tv/${show.id}`} key={show.id} className="min-w-[140px] w-[140px] md:min-w-[200px] md:w-[200px] group cursor-pointer block">
             <div className="relative aspect-[2/3] rounded-lg overflow-hidden glass-panel bloom-hover mb-3">
               <img className="w-full h-full object-cover" 
                    src={getImageUrl(show.poster_path, 'w500')} alt={show.name} />
@@ -90,14 +90,14 @@ export default function Anime() {
   return (
     <div className="min-h-screen pt-24 pb-20 relative z-10">
       {/* Header */}
-      <div className="px-gutter mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h2 className="font-display-lg text-3xl">
+      <div className="px-4 md:px-gutter lg:px-container-padding mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h2 className="font-display-lg text-2xl md:text-3xl">
           {selectedGenreName ? `${selectedGenreName} Anime` : 'Anime'}
         </h2>
       </div>
 
       {selectedGenre ? (
-        <section className="px-gutter">
+        <section className="px-4 md:px-gutter lg:px-container-padding">
           {filterLoading ? (
             <div className="animate-pulse flex items-center justify-center h-40 text-primary">Memuat Filter...</div>
           ) : (
@@ -133,7 +133,7 @@ export default function Anime() {
       ) : (
         <>
           {/* Hero Section */}
-          <section className="px-gutter mb-section-margin relative h-[65vh] rounded-lg overflow-hidden flex flex-col justify-end">
+          <section className="mx-4 md:mx-gutter lg:mx-container-padding mb-section-margin relative h-[50vh] md:h-[65vh] rounded-2xl md:rounded-[3rem] overflow-hidden flex flex-col justify-end shadow-2xl">
         {loading ? (
           <div className="w-full h-full rounded-lg glass-panel animate-pulse flex items-center justify-center text-primary">Memuat Anime...</div>
         ) : animeList.length > 0 && (
@@ -143,22 +143,22 @@ export default function Anime() {
                    style={{ backgroundImage: `url('${getImageUrl(animeList[0].backdrop_path)}')` }}></div>
               <div className="absolute inset-0 hero-gradient"></div>
             </div>
-            <div className="relative z-10 p-container-padding max-w-2xl">
-              <span className="inline-block px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary font-label-sm text-label-sm mb-4 uppercase tracking-widest">
+            <div className="relative z-10 p-6 md:p-12 lg:p-container-padding max-w-2xl">
+              <span className="inline-block px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary font-label-sm text-[10px] md:text-label-sm mb-4 uppercase tracking-widest">
                 Top Rated Anime
               </span>
-              <h1 className="font-display-lg text-display-lg mb-4 text-primary leading-tight">
+              <h1 className="font-display-lg text-[28px] md:text-display-lg mb-2 md:mb-4 text-primary leading-tight">
                 {animeList[0].name}
               </h1>
-              <p className="font-body-lg text-body-lg mb-8 text-on-surface-variant leading-relaxed line-clamp-3">
+              <p className="font-body-md md:font-body-lg text-[14px] md:text-body-lg mb-6 md:mb-8 text-on-surface-variant leading-relaxed line-clamp-2 md:line-clamp-3">
                 {animeList[0].overview}
               </p>
-              <div className="flex gap-4">
-                <Link to={`/play/${animeList[0].id}`} className="bg-gradient-to-r from-primary to-secondary text-on-primary px-8 py-3 rounded-full font-body-md font-bold flex items-center gap-2 bloom-hover">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                <Link to={`/play/${animeList[0].id}`} className="bg-gradient-to-r from-primary to-secondary text-on-primary px-6 md:px-8 py-3 rounded-full font-body-md font-bold flex items-center justify-center gap-2 bloom-hover">
                   <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                   Watch Now
                 </Link>
-                <Link to={`/tv/${animeList[0].id}`} className="glass-panel text-on-surface px-8 py-3 rounded-full font-body-md font-bold flex items-center gap-2 bloom-hover">
+                <Link to={`/tv/${animeList[0].id}`} className="glass-panel text-on-surface px-6 md:px-8 py-3 rounded-full font-body-md font-bold flex items-center justify-center gap-2 bloom-hover">
                   <span className="material-symbols-outlined">add</span>
                   Add to List
                 </Link>

@@ -53,22 +53,7 @@ export default function Player() {
 
   const activeServer = SERVERS[serverIndex % SERVERS.length];
 
-  // Window Focus Lock (Option 4): Refocus window if ad tries to open tab on blur
-  useEffect(() => {
-    let blurTimeout;
-    const handleBlur = () => {
-      // If user loses window focus (e.g. ad pop-up window opened), pull focus back immediately
-      blurTimeout = setTimeout(() => {
-        window.focus();
-      }, 100);
-    };
-
-    window.addEventListener('blur', handleBlur);
-    return () => {
-      window.removeEventListener('blur', handleBlur);
-      if (blurTimeout) clearTimeout(blurTimeout);
-    };
-  }, []);
+  // Window Focus Lock (Removed because it freezes the browser for legit users)
 
   // Track watch time
   useEffect(() => {
@@ -190,15 +175,6 @@ export default function Player() {
             
             <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 shadow-[0_0_60px_rgba(212,165,255,0.2)] group">
               
-              {/* Invisible First-Click Shield (Option 1 & 2) */}
-              {shieldActive && (
-                <div 
-                  onClick={handleShieldClick}
-                  className="absolute inset-0 z-30 bg-transparent cursor-pointer"
-                  title="Click to activate player"
-                />
-              )}
-
               {/* Actual iframe embedding player server */}
               <iframe
                 key={`${activeServer.id}-${id}-${season}-${episode}`}
@@ -206,6 +182,7 @@ export default function Player() {
                 className="absolute inset-0 w-full h-full border-0 z-10"
                 allowFullScreen
                 allow="autoplay; encrypted-media; picture-in-picture"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
                 title="Movie Player"
               ></iframe>
             </div>

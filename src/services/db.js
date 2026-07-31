@@ -1,3 +1,8 @@
+import { db, isFirebaseConfigured } from './firebase';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+
+// Fallback logic uses localStorage if Firebase is not configured
+
 const getCurrentUserId = () => {
   const userStr = localStorage.getItem('user');
   if (userStr) {
@@ -13,6 +18,21 @@ const getCurrentUserId = () => {
 export const getWatchlist = async () => {
   const userId = getCurrentUserId();
   if (!userId) return [];
+  
+  if (isFirebaseConfigured() && userId !== 'local_user') {
+    try {
+      const userRef = doc(db, 'users', userId);
+      const snap = await getDoc(userRef);
+      if (snap.exists()) {
+        return snap.data().watchlist || [];
+      }
+      return [];
+    } catch (e) {
+      console.error("Firebase fetch error", e);
+    }
+  }
+
+  // Fallback to localStorage
   try {
     const local = localStorage.getItem(`watchlist_${userId}`);
     return local ? JSON.parse(local) : [];
@@ -28,8 +48,19 @@ export const addToWatchlist = async (movie) => {
   const { id, ...rest } = movie;
   const payload = { ...rest, movieId: id, userId, id: Date.now() };
   
+  if (isFirebaseConfigured() && userId !== 'local_user') {
+    try {
+      const userRef = doc(db, 'users', userId);
+      await setDoc(userRef, {
+        watchlist: arrayUnion(payload)
+      }, { merge: true });
+    } catch (e) {
+      console.error("Firebase update error", e);
+    }
+  }
+
+  // Fallback to localStorage always so UI is instant
   const list = await getWatchlist();
-  // Prevent duplicates
   if (!list.find(item => String(item.movieId) === String(id))) {
     list.push(payload);
     localStorage.setItem(`watchlist_${userId}`, JSON.stringify(list));
@@ -41,6 +72,22 @@ export const removeFromWatchlist = async (movieId) => {
   const userId = getCurrentUserId();
   if (!userId) return null;
   
+  if (isFirebaseConfigured() && userId !== 'local_user') {
+    try {
+      const list = await getWatchlist();
+      const itemToRemove = list.find(item => String(item.movieId) === String(movieId));
+      if (itemToRemove) {
+        const userRef = doc(db, 'users', userId);
+        await updateDoc(userRef, {
+          watchlist: arrayRemove(itemToRemove)
+        });
+      }
+    } catch (e) {
+      console.error("Firebase update error", e);
+    }
+  }
+
+  // Fallback to localStorage
   const list = await getWatchlist();
   const updated = list.filter(item => String(item.movieId) !== String(movieId));
   localStorage.setItem(`watchlist_${userId}`, JSON.stringify(updated));
@@ -48,14 +95,11 @@ export const removeFromWatchlist = async (movieId) => {
 };
 
 export const checkInWatchlist = async (movieId) => {
-  const userId = getCurrentUserId();
-  if (!userId) return false;
-  
   const list = await getWatchlist();
   return list.some(item => String(item.movieId) === String(movieId));
 };
 
-// USER APIS (Mocking db.json behavior with localStorage)
+// USER APIS (Mocking db.json behavior with localStorage and Firebase)
 export const getUserByEmail = async (email) => {
   try {
     const usersStr = localStorage.getItem('mock_users');
@@ -67,19 +111,37 @@ export const getUserByEmail = async (email) => {
 };
 
 export const createUser = async (userData) => {
+  const newUser = { ...userData, id: Date.now().toString() };
+  
+  if (isFirebaseConfigured()) {
+    try {
+      await setDoc(doc(db, 'users', newUser.id), newUser);
+    } catch (e) {
+      console.error("Firebase createUser error", e);
+    }
+  }
+
   try {
     const usersStr = localStorage.getItem('mock_users');
     const users = usersStr ? JSON.parse(usersStr) : [];
-    const newUser = { ...userData, id: Date.now().toString() };
     users.push(newUser);
     localStorage.setItem('mock_users', JSON.stringify(users));
     return newUser;
   } catch(e) {
-    return { ...userData, id: Date.now().toString() };
+    return newUser;
   }
 };
 
 export const updateUser = async (id, userData) => {
+  if (isFirebaseConfigured()) {
+    try {
+      const userRef = doc(db, 'users', id);
+      await updateDoc(userRef, userData);
+    } catch (e) {
+      console.error("Firebase updateUser error", e);
+    }
+  }
+
   try {
     const usersStr = localStorage.getItem('mock_users');
     const users = usersStr ? JSON.parse(usersStr) : [];
