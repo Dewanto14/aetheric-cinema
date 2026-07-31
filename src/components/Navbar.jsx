@@ -51,16 +51,22 @@ export default function Navbar() {
         const notifs = await getLatestNotifications();
         setLiveNotifications(notifs);
         
-        // Check if there are any new unread notifications
-        if (notifs.length > 0) {
-          const lastRead = localStorage.getItem('lastReadNotificationAt');
+        // Check if user has read notifications
+        const lastRead = localStorage.getItem('lastReadNotificationAt');
+        
+        if (!lastRead) {
+          // User has never opened notifications, show red dot for the Welcome message
+          setHasUnread(true);
+        } else if (notifs.length > 0) {
+          // Check if there are live notifications newer than the last read time
           const latestNotifTime = new Date(notifs[0].createdAt).getTime();
-          
-          if (!lastRead || latestNotifTime > parseInt(lastRead)) {
+          if (latestNotifTime > parseInt(lastRead)) {
             setHasUnread(true);
           } else {
             setHasUnread(false);
           }
+        } else {
+          setHasUnread(false);
         }
       } catch (e) {
         console.error("Error fetching notifications", e);
