@@ -17,6 +17,8 @@ import EditProfile from './pages/EditProfile';
 import HelpCenter from './pages/HelpCenter';
 import ResetPassword from './pages/ResetPassword';
 import PersonDetail from './pages/PersonDetail';
+import MaintenanceScreen from './components/MaintenanceScreen';
+import { listenToSiteSettings } from './services/db';
 
 function ProtectedRoute({ children }) {
   const user = localStorage.getItem('user');
@@ -30,6 +32,47 @@ function ProtectedRoute({ children }) {
 }
 
 function App() {
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  useEffect(() => {
+    // Check if user is admin
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const userObj = JSON.parse(userStr);
+        if (userObj.email?.toLowerCase() === 'dewantomaulana14@gmail.com') {
+          setIsAdmin(true);
+        }
+      } catch(e) {}
+    }
+
+    // Listen to global settings
+    const unsubscribe = listenToSiteSettings((settings) => {
+      setMaintenanceMode(settings?.maintenanceMode || false);
+      setIsInitializing(false);
+    });
+
+    // Fallback if no db connection
+    setTimeout(() => setIsInitializing(false), 2000);
+
+    return () => unsubscribe();
+  }, []);
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-background flex justify-center items-center">
+        <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // If maintenance is ON and the user is NOT the admin, show the lockdown screen.
+  if (maintenanceMode && !isAdmin) {
+    return <MaintenanceScreen />;
+  }
+
   return (
     <BrowserRouter>
       <Navbar />

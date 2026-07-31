@@ -1,5 +1,5 @@
 import { db, isFirebaseConfigured } from './firebase';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs, getCountFromServer, addDoc, orderBy } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs, getCountFromServer, addDoc, orderBy, onSnapshot } from 'firebase/firestore';
 
 // Fallback logic uses localStorage if Firebase is not configured
 
@@ -123,6 +123,53 @@ export const getLatestNotifications = async () => {
     }
   }
   return [];
+};
+
+// SITE SETTINGS
+export const getSiteSettings = async () => {
+  if (isFirebaseConfigured()) {
+    try {
+      const docRef = doc(db, 'settings', 'global');
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        return snap.data();
+      } else {
+        // Create default settings if not exists
+        const defaultSettings = { maintenanceMode: false };
+        await setDoc(docRef, defaultSettings);
+        return defaultSettings;
+      }
+    } catch (e) {
+      console.error("Failed to get settings", e);
+    }
+  }
+  return { maintenanceMode: false };
+};
+
+export const listenToSiteSettings = (callback) => {
+  if (isFirebaseConfigured()) {
+    const docRef = doc(db, 'settings', 'global');
+    return onSnapshot(docRef, (doc) => {
+      if (doc.exists()) {
+        callback(doc.data());
+      }
+    });
+  }
+  return () => {};
+};
+
+export const updateMaintenanceMode = async (isActive) => {
+  if (isFirebaseConfigured()) {
+    try {
+      const docRef = doc(db, 'settings', 'global');
+      await setDoc(docRef, { maintenanceMode: isActive }, { merge: true });
+      return true;
+    } catch (e) {
+      console.error("Failed to update maintenance mode", e);
+      return false;
+    }
+  }
+  return false;
 };
 
 // WATCHLIST APIS

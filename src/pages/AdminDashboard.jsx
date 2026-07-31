@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getContactMessages, getTotalUserCount, getAllUsers, broadcastNotification } from '../services/db';
+import { getContactMessages, getTotalUserCount, getAllUsers, broadcastNotification, updateMaintenanceMode, getSiteSettings } from '../services/db';
 
 export default function AdminDashboard() {
   const [messages, setMessages] = useState([]);
@@ -9,6 +9,8 @@ export default function AdminDashboard() {
   const [showUsersModal, setShowUsersModal] = useState(false);
   const [broadcastForm, setBroadcastForm] = useState({ title: '', message: '' });
   const [isBroadcasting, setIsBroadcasting] = useState(false);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [isTogglingMaintenance, setIsTogglingMaintenance] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -30,9 +32,11 @@ export default function AdminDashboard() {
       try {
         const msgs = await getContactMessages();
         const users = await getAllUsers();
+        const settings = await getSiteSettings();
         setMessages(msgs);
         setUsersList(users);
         setUserCount(users.length);
+        setMaintenanceMode(settings?.maintenanceMode || false);
       } catch (error) {
         console.error("Error fetching admin data", error);
       } finally {
@@ -53,6 +57,18 @@ export default function AdminDashboard() {
       setBroadcastForm({ title: '', message: '' });
     } else {
       alert("Failed to send broadcast.");
+    }
+  };
+
+  const handleMaintenanceToggle = async () => {
+    setIsTogglingMaintenance(true);
+    const newMode = !maintenanceMode;
+    const success = await updateMaintenanceMode(newMode);
+    setIsTogglingMaintenance(false);
+    if (success) {
+      setMaintenanceMode(newMode);
+    } else {
+      alert("Failed to update maintenance mode. Check your connection.");
     }
   };
 
@@ -154,6 +170,42 @@ export default function AdminDashboard() {
               {isBroadcasting ? 'Broadcasting...' : 'Send to All Users'}
             </button>
           </form>
+        </div>
+
+        {/* Site Controls */}
+        <h2 className="font-headline-md text-2xl text-white font-bold mb-6 flex items-center gap-3">
+          <span className="material-symbols-outlined text-tertiary">settings_suggest</span>
+          Site Controls
+        </h2>
+        <div className="glass-panel p-8 rounded-2xl border border-tertiary/30 relative overflow-hidden mb-10 flex items-center justify-between">
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-tertiary/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="relative z-10 max-w-xl">
+            <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+              <span className="material-symbols-outlined text-tertiary">construction</span>
+              Maintenance Mode (Lockdown)
+            </h3>
+            <p className="text-on-surface-variant font-body-md text-sm">
+              When activated, all users (except you) will be locked out and see a "Dewa sedang melakukan perbaikan" screen. Useful for major database upgrades or fixing bugs.
+            </p>
+          </div>
+
+          <div className="relative z-10">
+            <button 
+              onClick={handleMaintenanceToggle}
+              disabled={isTogglingMaintenance}
+              className={`relative inline-flex h-12 w-24 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 border-2 ${
+                maintenanceMode ? 'bg-error/20 border-error' : 'bg-white/10 border-white/20'
+              }`}
+            >
+              <span className={`inline-block h-9 w-9 transform rounded-full bg-white transition-transform ${
+                maintenanceMode ? 'translate-x-13 bg-error shadow-[0_0_15px_rgba(255,0,0,0.8)]' : 'translate-x-1.5'
+              }`} />
+            </button>
+            <p className={`text-center text-xs font-bold mt-2 uppercase tracking-wide ${maintenanceMode ? 'text-error animate-pulse' : 'text-on-surface-variant'}`}>
+              {maintenanceMode ? 'SYSTEM LOCKED' : 'NORMAL MODE'}
+            </p>
+          </div>
         </div>
 
         {/* Users Modal */}
