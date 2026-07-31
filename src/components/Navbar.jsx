@@ -204,8 +204,8 @@ export default function Navbar() {
                 <div className="p-4 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
                   <div className="w-2 h-2 mt-1.5 rounded-full bg-tertiary shrink-0"></div>
                   <div>
-                    <p className="text-sm text-white font-bold mb-1">Welcome to Aetheric Cinema!</p>
-                    <p className="text-xs text-on-surface-variant">Your journey into the cinematic cosmos begins here. Enjoy free streaming without limits.</p>
+                    <p className="text-sm text-white font-bold mb-1">Welcome to Aetheric Cinema! 🍿</p>
+                    <p className="text-xs text-on-surface-variant">Halo! Saya <strong>Dewanto</strong>, developer di balik web ini. Selamat datang di Aetheric Cinema! Nikmati ribuan film gratis berkualitas HD tanpa batas. Siapkan popcorn mu dan selamat menonton!</p>
                     <p className="text-[10px] text-white/40 mt-2">1 day ago</p>
                   </div>
                 </div>
