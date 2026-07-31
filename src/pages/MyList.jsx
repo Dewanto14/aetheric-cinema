@@ -68,9 +68,9 @@ export default function MyList() {
             </h2>
           </div>
           
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-card-gap">
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-card-gap pb-4 hide-scrollbar">
             {history.map((movie) => (
-              <Link to={`/play/${movie.id}`} key={movie.id} className="group relative flex flex-col gap-3">
+              <Link to={`/play/${movie.id}`} key={movie.id} className="group relative flex flex-col gap-3 min-w-[160px] md:min-w-[280px] snap-start shrink-0">
                 <div className="relative aspect-video rounded-lg overflow-hidden glass bg-white/5 border border-white/10 bloom-hover transition-all duration-300">
                   <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" 
                        style={{ backgroundImage: `url('${getImageUrl(movie.poster_path, 'w500')}')` }}></div>
