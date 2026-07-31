@@ -215,7 +215,7 @@ export default function Navbar() {
         </div>
         {user ? (
           <div className="flex items-center gap-3">
-            {user.email === 'dewantomaulana14@gmail.com' && (
+            {user.email?.toLowerCase() === 'dewantomaulana14@gmail.com' && (
               <Link to="/admin" className="hidden md:flex px-4 py-1.5 rounded-full bg-error/20 border border-error/50 text-error font-bold hover:bg-error/30 transition-colors text-xs uppercase tracking-wider items-center gap-1 shadow-[0_0_10px_rgba(255,0,0,0.3)]">
                 <span className="material-symbols-outlined text-[14px]">shield_person</span>
                 Admin

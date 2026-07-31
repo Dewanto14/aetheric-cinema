@@ -16,7 +16,7 @@ export default function AdminDashboard() {
     }
     
     const user = JSON.parse(userStr);
-    if (user.email !== 'dewantomaulana14@gmail.com') {
+    if (user.email?.toLowerCase() !== 'dewantomaulana14@gmail.com') {
       navigate('/', { replace: true }); // Not admin
       return;
     }
