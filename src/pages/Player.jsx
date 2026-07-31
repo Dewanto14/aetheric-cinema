@@ -198,7 +198,8 @@ export default function Player() {
                   Tips Menonton Lancar
                 </p>
                 <p className="font-body-sm text-xs md:text-sm text-on-surface-variant leading-relaxed">
-                  Kami menggunakan server gratis. <strong>Jika muncul iklan tab baru saat video pertama kali di-klik, cukup tutup tab tersebut</strong>, lalu kembali ke halaman ini. Video akan berjalan lancar setelahnya.
+                  Kami menggunakan server gratis pihak ketiga. <strong>Jika muncul iklan tab baru saat video pertama kali di-klik, cukup tutup tab tersebut</strong>, lalu kembali ke halaman ini. <br/><br/>
+                  <span className="text-primary-fixed">💡 <strong>Pro Tip:</strong> Sangat disarankan untuk memasang ekstensi <strong>AdBlocker (seperti uBlock Origin)</strong> di browser Anda agar pengalaman menonton 100% bebas dari iklan popup.</span>
                 </p>
               </div>
             </div>
