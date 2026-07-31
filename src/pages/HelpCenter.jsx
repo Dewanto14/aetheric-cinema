@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { submitContactMessage } from '../services/db';
 
 export default function HelpCenter() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -10,6 +11,9 @@ export default function HelpCenter() {
     { sender: 'bot', text: 'Hello! I am Aetheric Support Bot. How can I assist you today?' }
   ]);
   const [chatInput, setChatInput] = useState('');
+  const [emailForm, setEmailForm] = useState({ name: '', email: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -89,13 +93,28 @@ export default function HelpCenter() {
     setChatMessages([...chatMessages, { sender: 'user', text: chatInput }]);
     setChatInput('');
     
-    // Simulate bot response
     setTimeout(() => {
-      setChatMessages(prev => [...prev, { 
-        sender: 'bot', 
-        text: 'Thank you for reaching out! A human agent will connect with you shortly. (This is a simulated response)' 
-      }]);
+      setChatMessages(prev => [...prev, { sender: 'bot', text: 'Thanks for reaching out! Since this is a live demo, I cannot answer questions dynamically. Please use the Email Support form for real inquiries.' }]);
     }, 1000);
+  };
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    const success = await submitContactMessage(emailForm.name, emailForm.email, emailForm.message);
+    
+    setIsSubmitting(false);
+    if (success) {
+      setSubmitSuccess(true);
+      setTimeout(() => {
+        setIsEmailOpen(false);
+        setSubmitSuccess(false);
+        setEmailForm({ name: '', email: '', message: '' });
+      }, 3000);
+    } else {
+      alert("Failed to send message. Please try again.");
+    }
   };
 
   const filteredFaqs = faqs.filter(faq => 
@@ -290,23 +309,33 @@ export default function HelpCenter() {
               <p className="text-on-surface-variant text-sm">Fill out the form below and we'll get back to you within 24 hours.</p>
             </div>
             
-            <form onSubmit={(e) => { e.preventDefault(); alert("Email sent successfully! (Simulated)"); setIsEmailOpen(false); }} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Name</label>
-                <input type="text" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50" placeholder="Your name" />
+            {submitSuccess ? (
+              <div className="text-center py-10">
+                <div className="w-16 h-16 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/50">
+                  <span className="material-symbols-outlined text-3xl">check</span>
+                </div>
+                <h4 className="text-xl font-bold text-white mb-2">Message Sent!</h4>
+                <p className="text-sm text-on-surface-variant">Our admin (Dewanto) has received your message.</p>
               </div>
-              <div>
-                <label className="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Email Address</label>
-                <input type="email" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50" placeholder="your@email.com" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Message</label>
-                <textarea required rows="4" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50 resize-none" placeholder="Describe your issue..."></textarea>
-              </div>
-              <button type="submit" className="w-full py-4 bg-gradient-to-r from-primary to-inverse-primary rounded-xl font-bold text-white shadow-[0_0_20px_rgba(212,165,255,0.4)] hover:shadow-[0_0_30px_rgba(212,165,255,0.6)] transition-all">
-                Send Message
-              </button>
-            </form>
+            ) : (
+              <form onSubmit={handleEmailSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Name</label>
+                  <input type="text" value={emailForm.name} onChange={(e) => setEmailForm({...emailForm, name: e.target.value})} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50" placeholder="Your name" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Email Address</label>
+                  <input type="email" value={emailForm.email} onChange={(e) => setEmailForm({...emailForm, email: e.target.value})} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50" placeholder="your@email.com" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Message</label>
+                  <textarea required value={emailForm.message} onChange={(e) => setEmailForm({...emailForm, message: e.target.value})} rows="4" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50 resize-none" placeholder="Describe your issue..."></textarea>
+                </div>
+                <button type="submit" disabled={isSubmitting} className="w-full py-4 bg-gradient-to-r from-primary to-inverse-primary rounded-xl font-bold text-white shadow-[0_0_20px_rgba(212,165,255,0.4)] hover:shadow-[0_0_30px_rgba(212,165,255,0.6)] transition-all disabled:opacity-50">
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}

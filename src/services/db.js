@@ -1,5 +1,5 @@
 import { db, isFirebaseConfigured } from './firebase';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs, getCountFromServer } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs, getCountFromServer, addDoc, orderBy } from 'firebase/firestore';
 
 // Fallback logic uses localStorage if Firebase is not configured
 
@@ -27,6 +27,46 @@ export const getTotalUserCount = async () => {
   }
   // Fallback if no firebase, just return 0 to pass
   return 0;
+};
+
+export const submitContactMessage = async (name, email, message) => {
+  if (isFirebaseConfigured()) {
+    try {
+      const messagesRef = collection(db, 'messages');
+      await addDoc(messagesRef, {
+        name,
+        email,
+        message,
+        createdAt: new Date().toISOString(),
+        read: false
+      });
+      return true;
+    } catch (e) {
+      console.error("Failed to submit message", e);
+      return false;
+    }
+  }
+  // Simulated success for non-firebase environments
+  return true;
+};
+
+export const getContactMessages = async () => {
+  if (isFirebaseConfigured()) {
+    try {
+      const messagesRef = collection(db, 'messages');
+      const q = query(messagesRef, orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      const messages = [];
+      snapshot.forEach(doc => {
+        messages.push({ id: doc.id, ...doc.data() });
+      });
+      return messages;
+    } catch (e) {
+      console.error("Failed to get messages", e);
+      return [];
+    }
+  }
+  return [];
 };
 
 // WATCHLIST APIS

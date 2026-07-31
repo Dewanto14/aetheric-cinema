@@ -11,6 +11,8 @@ import MyList from './pages/MyList';
 import History from './pages/History';
 import Navbar from './components/Navbar';
 import Auth from './pages/Auth';
+import SearchResults from './pages/SearchResults';
+import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import HelpCenter from './pages/HelpCenter';
@@ -41,6 +43,8 @@ function App() {
         <Route path="/movie/:id" element={<MovieDetail />} />
         <Route path="/tv/:id" element={<MovieDetail />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/search" element={<SearchResults />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/reset-password" element={<ResetPassword />} />
