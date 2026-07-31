@@ -217,18 +217,27 @@ export default function Player() {
             </div>
             
             {/* Player Utility Bar (Clean & Subtle) */}
-            <div className="mt-3 flex items-center justify-between text-xs text-white/70">
-              <span className="flex items-center gap-1.5 text-on-surface-variant">
+            <div className="mt-4 flex flex-col gap-2 text-xs">
+              <span className="flex items-center gap-1.5 text-on-surface-variant font-medium">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                Streaming HD Clean Server
+                Pilih Server (Coba server lain jika Sub Indo tidak ada):
               </span>
-              <button 
-                onClick={handleSilentFailover}
-                className="hover:text-primary transition-colors flex items-center gap-1 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>refresh</span>
-                Video tidak bisa diputar? Reload Server
-              </button>
+              <div className="flex flex-wrap gap-2">
+                {SERVERS.map((server, idx) => (
+                  <button
+                    key={server.id}
+                    onClick={() => setServerIndex(idx)}
+                    className={`px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 ${
+                      serverIndex % SERVERS.length === idx 
+                        ? 'bg-primary/20 border-primary text-primary font-bold' 
+                        : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    {serverIndex % SERVERS.length === idx && <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>}
+                    {server.name}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
