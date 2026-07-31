@@ -66,6 +66,9 @@ export default function MyList() {
             <h2 className="font-headline-md text-[20px] md:text-headline-md text-primary flex items-center gap-2">
               <Clock size={24} className="text-primary" /> Recently Watched
             </h2>
+            <Link to="/history" className="text-on-surface-variant font-label-sm text-sm hover:text-primary hover:underline flex items-center gap-1 transition-colors">
+              See All
+            </Link>
           </div>
           
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-card-gap pb-4 hide-scrollbar">

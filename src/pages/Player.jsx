@@ -94,8 +94,8 @@ export default function Player() {
           };
           filteredHistory.unshift(newEntry);
           
-          // Keep only top 10
-          userObj.watchHistory = filteredHistory.slice(0, 10);
+          // Keep only top 100
+          userObj.watchHistory = filteredHistory.slice(0, 100);
           
           localStorage.setItem('user', JSON.stringify(userObj));
           if (userObj.id) {

@@ -8,6 +8,8 @@ import Player from './pages/Player';
 import Series from './pages/Series';
 import Anime from './pages/Anime';
 import MyList from './pages/MyList';
+import History from './pages/History';
+import Search from './pages/Search';
 import Navbar from './components/Navbar';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
@@ -36,6 +38,8 @@ function App() {
         <Route path="/series" element={<Series />} />
         <Route path="/anime" element={<Anime />} />
         <Route path="/mylist" element={<MyList />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/search" element={<Search />} />
         <Route path="/movie/:id" element={<MovieDetail />} />
         <Route path="/tv/:id" element={<MovieDetail />} />
         <Route path="/auth" element={<Auth />} />
