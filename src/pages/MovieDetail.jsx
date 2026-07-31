@@ -123,7 +123,7 @@ export default function MovieDetail() {
                 {!isTV && (
                   <>
                     <span className="text-white/40">|</span>
-                    <span className="text-on-surface-variant">{media.runtime} min</span>
+                    <span className="text-on-surface-variant">{media.runtime || media.episode_run_time?.[0] || 'N/A'} min</span>
                   </>
                 )}
                 {isTV && media.number_of_seasons && (

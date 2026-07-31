@@ -6,8 +6,14 @@ import { addToWatchlist, checkInWatchlist, updateUser } from '../services/db';
 
 const SERVERS = [
   {
+    id: 'vidsrc',
+    name: 'VidSrc (Primary)',
+    getUrl: (type, id, season, episode) => 
+      `https://vidsrc.me/embed/${type}?tmdb=${id}${type === 'tv' ? `&season=${season}&episode=${episode}` : ''}`
+  },
+  {
     id: 'embedsu',
-    name: 'Embed.su (Primary)',
+    name: 'Embed.su (Backup 1)',
     getUrl: (type, id, season, episode) => 
       type === 'tv' 
         ? `https://embed.su/embed/tv/${id}/${season}/${episode}`
@@ -15,7 +21,7 @@ const SERVERS = [
   },
   {
     id: 'vidlink',
-    name: 'VidLink (Backup 1)',
+    name: 'VidLink (Backup 2)',
     getUrl: (type, id, season, episode) => 
       type === 'tv'
         ? `https://vidlink.pro/tv/${id}/${season}/${episode}`
@@ -23,17 +29,11 @@ const SERVERS = [
   },
   {
     id: 'autoembed',
-    name: 'AutoEmbed (Backup 2)',
+    name: 'AutoEmbed (Backup 3)',
     getUrl: (type, id, season, episode) => 
       type === 'tv'
         ? `https://player.autoembed.cc/embed/tv/${id}/${season}/${episode}`
         : `https://player.autoembed.cc/embed/movie/${id}`
-  },
-  {
-    id: 'vidsrc',
-    name: 'VidSrc (Backup 3)',
-    getUrl: (type, id, season, episode) => 
-      `https://vidsrc.me/embed/${type}?tmdb=${id}${type === 'tv' ? `&season=${season}&episode=${episode}` : ''}`
   }
 ];
 
@@ -254,9 +254,9 @@ export default function Player() {
               )}
               
               <div className="flex items-center gap-4 mb-4 font-label-sm text-label-sm text-on-surface-variant flex-wrap">
-                <span>{movie.release_date?.substring(0, 4)}</span>
+                <span>{(movie.release_date || movie.first_air_date)?.substring(0, 4)}</span>
                 <span>•</span>
-                <span>{movie.runtime}m</span>
+                <span>{movie.runtime || movie.episode_run_time?.[0] || 'N/A'}m</span>
                 <span>•</span>
                 <div className="flex items-center text-tertiary-fixed">
                   <Star size={14} className="fill-tertiary-fixed" />
