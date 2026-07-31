@@ -6,20 +6,20 @@ import { addToWatchlist, checkInWatchlist, updateUser } from '../services/db';
 
 const SERVERS = [
   {
-    id: 'vidlink',
-    name: 'VidLink (Primary)',
-    getUrl: (type, id, season, episode) => 
-      type === 'tv'
-        ? `https://vidlink.pro/tv/${id}/${season}/${episode}`
-        : `https://vidlink.pro/movie/${id}`
-  },
-  {
     id: 'embedsu',
-    name: 'Embed.su (Backup 1)',
+    name: 'Embed.su (Primary)',
     getUrl: (type, id, season, episode) => 
       type === 'tv' 
         ? `https://embed.su/embed/tv/${id}/${season}/${episode}`
         : `https://embed.su/embed/movie/${id}`
+  },
+  {
+    id: 'vidlink',
+    name: 'VidLink (Backup 1)',
+    getUrl: (type, id, season, episode) => 
+      type === 'tv'
+        ? `https://vidlink.pro/tv/${id}/${season}/${episode}`
+        : `https://vidlink.pro/movie/${id}`
   },
   {
     id: 'autoembed',
