@@ -182,7 +182,6 @@ export default function Player() {
                 className="absolute inset-0 w-full h-full border-0 z-10"
                 allowFullScreen
                 allow="autoplay; encrypted-media; picture-in-picture"
-                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
                 title="Movie Player"
               ></iframe>
             </div>
