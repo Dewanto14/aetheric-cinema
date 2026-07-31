@@ -210,7 +210,6 @@ export default function HelpCenter() {
           © 2024 Aetheric Cinema. Dreaming in high definition.
         </div>
       </footer>
-      </footer>
 
       {/* Live Chat Widget */}
       {isChatOpen && (
