@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -281,10 +281,10 @@ export default function Profile() {
           <div className="font-headline-md text-2xl text-primary">Aetheric Cinema</div>
           <p className="font-label-sm text-xs text-on-surface-variant">© 2024 Aetheric Cinema. Drift into the clouds.</p>
           <div className="flex gap-6">
-            <a className="text-on-surface-variant hover:text-tertiary transition-colors font-label-sm text-xs" href="#">Privacy Policy</a>
-            <a className="text-on-surface-variant hover:text-tertiary transition-colors font-label-sm text-xs" href="#">Terms of Service</a>
-            <a className="text-on-surface-variant hover:text-tertiary transition-colors font-label-sm text-xs" href="#">Help Center</a>
-            <a className="text-on-surface-variant hover:text-tertiary transition-colors font-label-sm text-xs" href="#">Contact</a>
+            <Link to="/help" className="text-on-surface-variant hover:text-tertiary transition-colors font-label-sm text-xs">Privacy Policy</Link>
+            <Link to="/help" className="text-on-surface-variant hover:text-tertiary transition-colors font-label-sm text-xs">Terms of Service</Link>
+            <Link to="/help" className="text-on-surface-variant hover:text-tertiary transition-colors font-label-sm text-xs">Help Center</Link>
+            <Link to="/help" className="text-on-surface-variant hover:text-tertiary transition-colors font-label-sm text-xs">Contact</Link>
           </div>
         </footer>
       </main>

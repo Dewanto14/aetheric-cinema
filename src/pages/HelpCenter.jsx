@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function HelpCenter() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -230,10 +231,10 @@ export default function HelpCenter() {
       <footer className="bg-surface-dim/40 backdrop-blur-md border-t border-white/10 w-full mt-16 flex flex-col md:flex-row justify-between items-center px-6 md:px-10 py-8 gap-6 relative z-10">
         <div className="font-display-lg text-primary text-2xl md:text-3xl font-bold">Aetheric Cinema</div>
         <nav className="flex flex-wrap justify-center gap-4 md:gap-6">
-          <a className="font-label-sm text-xs text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 uppercase cursor-pointer">Terms of Service</a>
-          <a className="font-label-sm text-xs text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 uppercase cursor-pointer">Privacy Policy</a>
-          <a className="font-label-sm text-xs text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 uppercase cursor-pointer">Contact Us</a>
-          <a className="font-label-sm text-xs text-primary transition-colors opacity-80 hover:opacity-100 uppercase cursor-pointer">Help Center</a>
+          <Link to="/help" className="font-label-sm text-xs text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 uppercase cursor-pointer">Terms of Service</Link>
+          <Link to="/help" className="font-label-sm text-xs text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 uppercase cursor-pointer">Privacy Policy</Link>
+          <Link to="/help" className="font-label-sm text-xs text-on-surface-variant hover:text-tertiary transition-colors opacity-80 hover:opacity-100 uppercase cursor-pointer">Contact Us</Link>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="font-label-sm text-xs text-primary transition-colors opacity-80 hover:opacity-100 uppercase cursor-pointer">Help Center</button>
         </nav>
         <div className="font-label-sm text-xs text-on-surface-variant opacity-80 text-center md:text-right">
           © 2024 Aetheric Cinema. Dreaming in high definition.
