@@ -15,8 +15,10 @@ export default function Auth() {
     e.preventDefault();
     setErrorMsg('');
     
+    const cleanEmail = email.trim();
+    
     try {
-      let dbUser = await getUserByEmail(email);
+      let dbUser = await getUserByEmail(cleanEmail);
       
       if (isLogin) {
         if (!dbUser) {
@@ -30,7 +32,7 @@ export default function Auth() {
         }
         // Create new user if not exists and trying to register
         dbUser = await createUser({
-          email,
+          email: cleanEmail,
           name: 'Stardust Voyager',
           avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRHp8BUhbtNBwJd9gSUGt3qNehRdbFWlBFpeW7DW4KsLPAtiaKzzBIxAydSs1Va5umpWSmhirvRir9aqbm0RkPF0EouKR3vNa2pqoB9qdAaHpJdl_tlF0yrbsIz27JqZBFU2AaO31Y3E80IPV6-fAHZs4bsl080KelPCkxK2894H9Qcp5gboKsSOfeJDYEWHMNjjUNL6Bv3hFRSxa2NfRpDJp7itYpk1yPe3oGPpSrwr-OM5u47uz3vA',
           memberSince: new Date().toISOString(),
@@ -45,7 +47,7 @@ export default function Auth() {
       console.error("Login failed:", error);
       // Fallback if json-server is not running
       localStorage.setItem('user', JSON.stringify({ 
-          email, 
+          email: cleanEmail, 
           name: 'Stardust Voyager', 
           avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRHp8BUhbtNBwJd9gSUGt3qNehRdbFWlBFpeW7DW4KsLPAtiaKzzBIxAydSs1Va5umpWSmhirvRir9aqbm0RkPF0EouKR3vNa2pqoB9qdAaHpJdl_tlF0yrbsIz27JqZBFU2AaO31Y3E80IPV6-fAHZs4bsl080KelPCkxK2894H9Qcp5gboKsSOfeJDYEWHMNjjUNL6Bv3hFRSxa2NfRpDJp7itYpk1yPe3oGPpSrwr-OM5u47uz3vA',
           memberSince: new Date().toISOString(),
