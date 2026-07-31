@@ -238,9 +238,7 @@ export default function Navbar() {
                   </div>
                 ))}
                 <div onClick={() => { navigate('/profile'); setIsNotifOpen(false); }} className="p-4 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center shrink-0 border border-secondary/30">
-                    <span className="text-secondary text-[14px]">Hi</span>
-                  </div>
+                  <div className="w-2 h-2 mt-1.5 rounded-full bg-error shrink-0 animate-pulse shadow-[0_0_8px_rgba(255,0,0,0.8)]"></div>
                   <div>
                     <p className="text-sm text-white font-bold mb-1">Welcome to Aetheric Cinema! 🍿</p>
                     <p className="text-xs text-on-surface-variant">Halo! Saya <strong>Dewanto</strong>, developer di balik web ini. Selamat datang di Aetheric Cinema! Nikmati ribuan film gratis berkualitas HD tanpa batas.</p>
