@@ -172,33 +172,41 @@ export default function Navbar() {
           </div>
         )}
 
-        <div className="relative hidden md:block" ref={notifRef}>
-          <button onClick={() => setIsNotifOpen(!isNotifOpen)} className="text-on-surface-variant hover:text-primary transition-colors relative">
+        <div className="relative" ref={notifRef}>
+          <button onClick={() => setIsNotifOpen(!isNotifOpen)} className="text-on-surface-variant hover:text-primary transition-colors relative mt-1">
             <Bell size={20}/>
             <span className="absolute top-0 right-0 w-2 h-2 bg-error rounded-full animate-pulse"></span>
           </button>
           
           {isNotifOpen && (
-            <div className="absolute top-12 right-0 w-72 glass-panel bg-[#100563]/95 backdrop-blur-3xl z-[200] rounded-xl shadow-2xl border-white/20 overflow-hidden flex flex-col">
+            <div className="absolute top-12 right-0 w-[300px] sm:w-80 glass-panel bg-[#100563]/95 backdrop-blur-3xl z-[200] rounded-xl shadow-2xl border-white/20 overflow-hidden flex flex-col">
               <div className="p-4 border-b border-white/10 flex justify-between items-center">
-                <span className="font-bold text-white">Notifications</span>
+                <span className="font-bold text-white flex items-center gap-2"><Bell size={16} className="text-primary"/> Notifications</span>
                 <span className="text-xs text-primary cursor-pointer hover:underline">Mark all read</span>
               </div>
               <div className="flex flex-col max-h-80 overflow-y-auto">
                 <div className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
-                  <div className="w-2 h-2 mt-1.5 rounded-full bg-primary shrink-0"></div>
+                  <div className="w-2 h-2 mt-1.5 rounded-full bg-primary shrink-0 animate-pulse"></div>
                   <div>
-                    <p className="text-sm text-white font-bold mb-1">Welcome to Aetheric Cinema!</p>
-                    <p className="text-xs text-on-surface-variant">Your journey into the cinematic cosmos begins here.</p>
-                    <p className="text-[10px] text-white/40 mt-2">Just now</p>
+                    <p className="text-sm text-white font-bold mb-1">Developer Update 🚀</p>
+                    <p className="text-xs text-on-surface-variant">Server Embed.su and AutoEmbed are now available! You can switch servers to find Indonesian subtitles easily.</p>
+                    <p className="text-[10px] text-white/40 mt-2">1 hour ago</p>
+                  </div>
+                </div>
+                <div className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
+                  <div className="w-2 h-2 mt-1.5 rounded-full bg-secondary shrink-0"></div>
+                  <div>
+                    <p className="text-sm text-white font-bold mb-1">New Movie Release 🎬</p>
+                    <p className="text-xs text-on-surface-variant">Deadpool & Wolverine is now available in 4K HDR! Watch it now.</p>
+                    <p className="text-[10px] text-white/40 mt-2">5 hours ago</p>
                   </div>
                 </div>
                 <div className="p-4 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
-                  <div className="w-2 h-2 mt-1.5 rounded-full bg-primary shrink-0"></div>
+                  <div className="w-2 h-2 mt-1.5 rounded-full bg-tertiary shrink-0"></div>
                   <div>
-                    <p className="text-sm text-white font-bold mb-1">New Features Unlocked</p>
-                    <p className="text-xs text-on-surface-variant">Check out your new Watch History page and Filter options!</p>
-                    <p className="text-[10px] text-white/40 mt-2">2 hours ago</p>
+                    <p className="text-sm text-white font-bold mb-1">Welcome to Aetheric Cinema!</p>
+                    <p className="text-xs text-on-surface-variant">Your journey into the cinematic cosmos begins here. Enjoy free streaming without limits.</p>
+                    <p className="text-[10px] text-white/40 mt-2">1 day ago</p>
                   </div>
                 </div>
               </div>
