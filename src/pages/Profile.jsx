@@ -5,6 +5,8 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [isTwilightMode, setIsTwilightMode] = useState(true);
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isBillingModalOpen, setIsBillingModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -162,7 +164,7 @@ export default function Profile() {
             <div className="space-y-4">
               <h4 className="font-label-sm text-xs text-on-surface-variant/60 uppercase tracking-widest ml-2">Subscription & Billing</h4>
               <div className="flex flex-col gap-2">
-                <div className="glass-panel p-5 rounded-lg flex items-center justify-between hover:bg-white/10 cursor-pointer transition-all">
+                <div onClick={() => setIsPaymentModalOpen(true)} className="glass-panel p-5 rounded-lg flex items-center justify-between hover:bg-white/10 cursor-pointer transition-all">
                   <div className="flex items-center gap-4">
                     <span className="material-symbols-outlined text-primary">credit_card</span>
                     <div>
@@ -172,7 +174,7 @@ export default function Profile() {
                   </div>
                   <span className="material-symbols-outlined text-on-surface-variant">chevron_right</span>
                 </div>
-                <div className="glass-panel p-5 rounded-lg flex items-center justify-between hover:bg-white/10 cursor-pointer transition-all">
+                <div onClick={() => setIsBillingModalOpen(true)} className="glass-panel p-5 rounded-lg flex items-center justify-between hover:bg-white/10 cursor-pointer transition-all">
                   <div className="flex items-center gap-4">
                     <span className="material-symbols-outlined text-primary">receipt_long</span>
                     <div>
@@ -325,6 +327,82 @@ export default function Profile() {
               Start Free Trial - $14.99/mo
             </button>
             <p className="text-center text-[10px] text-on-surface-variant mt-4">Cancel anytime. Terms and conditions apply.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Methods Modal */}
+      {isPaymentModalOpen && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+          <div className="glass-panel w-full max-w-lg rounded-2xl p-8 relative border border-white/20 shadow-[0_0_80px_rgba(212,165,255,0.3)] animate-in fade-in zoom-in-95">
+            <button onClick={() => setIsPaymentModalOpen(false)} className="absolute top-4 right-4 text-on-surface-variant hover:text-white transition-colors">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            <h3 className="font-display-lg text-2xl font-bold text-white mb-6">Payment Methods</h3>
+            
+            <div className="space-y-4 mb-6">
+              <div className="bg-primary/10 border border-primary/30 p-4 rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <span className="material-symbols-outlined text-primary text-3xl">credit_card</span>
+                  <div>
+                    <p className="font-bold">Visa ending in 4421</p>
+                    <p className="text-xs text-on-surface-variant">Expires 12/2026</p>
+                  </div>
+                </div>
+                <span className="text-xs font-bold text-primary bg-primary/20 px-2 py-1 rounded">DEFAULT</span>
+              </div>
+            </div>
+            
+            <button onClick={() => { alert('Adding new payment method... (Simulated)'); setIsPaymentModalOpen(false); }} className="w-full py-3 bg-white/5 border border-white/20 rounded-xl font-bold text-white hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+              <span className="material-symbols-outlined text-sm">add</span> Add New Card
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Billing History Modal */}
+      {isBillingModalOpen && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+          <div className="glass-panel w-full max-w-lg rounded-2xl p-8 relative border border-white/20 shadow-[0_0_80px_rgba(212,165,255,0.3)] animate-in fade-in zoom-in-95">
+            <button onClick={() => setIsBillingModalOpen(false)} className="absolute top-4 right-4 text-on-surface-variant hover:text-white transition-colors">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            <h3 className="font-display-lg text-2xl font-bold text-white mb-6">Billing History</h3>
+            
+            <div className="overflow-hidden rounded-xl border border-white/10 bg-surface-container-lowest/50">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-white/5 text-xs text-on-surface-variant uppercase border-b border-white/10">
+                  <tr>
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3">Amount</th>
+                    <th className="px-4 py-3 text-right">Invoice</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  <tr className="hover:bg-white/5 transition-colors">
+                    <td className="px-4 py-4 text-on-surface">Oct 14, 2024</td>
+                    <td className="px-4 py-4 font-bold text-primary">$14.99</td>
+                    <td className="px-4 py-4 text-right">
+                      <button onClick={() => alert('Downloading invoice...')} className="text-tertiary hover:text-white transition-colors"><span className="material-symbols-outlined text-sm">download</span></button>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-white/5 transition-colors">
+                    <td className="px-4 py-4 text-on-surface">Sep 14, 2024</td>
+                    <td className="px-4 py-4 font-bold text-primary">$14.99</td>
+                    <td className="px-4 py-4 text-right">
+                      <button onClick={() => alert('Downloading invoice...')} className="text-tertiary hover:text-white transition-colors"><span className="material-symbols-outlined text-sm">download</span></button>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-white/5 transition-colors">
+                    <td className="px-4 py-4 text-on-surface">Aug 14, 2024</td>
+                    <td className="px-4 py-4 font-bold text-primary">$14.99</td>
+                    <td className="px-4 py-4 text-right">
+                      <button onClick={() => alert('Downloading invoice...')} className="text-tertiary hover:text-white transition-colors"><span className="material-symbols-outlined text-sm">download</span></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
