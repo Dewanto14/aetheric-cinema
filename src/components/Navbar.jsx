@@ -185,7 +185,7 @@ export default function Navbar() {
                 <span className="text-xs text-primary cursor-pointer hover:underline">Mark all read</span>
               </div>
               <div className="flex flex-col max-h-80 overflow-y-auto">
-                <div className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
+                <div onClick={() => { navigate('/help'); setIsNotifOpen(false); }} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
                   <div className="w-2 h-2 mt-1.5 rounded-full bg-primary shrink-0 animate-pulse"></div>
                   <div>
                     <p className="text-sm text-white font-bold mb-1">Developer Update 🚀</p>
@@ -193,7 +193,7 @@ export default function Navbar() {
                     <p className="text-[10px] text-white/40 mt-2">1 hour ago</p>
                   </div>
                 </div>
-                <div className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
+                <div onClick={() => { navigate('/watch/movie/533535'); setIsNotifOpen(false); }} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
                   <div className="w-2 h-2 mt-1.5 rounded-full bg-secondary shrink-0"></div>
                   <div>
                     <p className="text-sm text-white font-bold mb-1">New Movie Release 🎬</p>
@@ -201,11 +201,11 @@ export default function Navbar() {
                     <p className="text-[10px] text-white/40 mt-2">5 hours ago</p>
                   </div>
                 </div>
-                <div className="p-4 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
+                <div onClick={() => { navigate('/profile'); setIsNotifOpen(false); }} className="p-4 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
                   <div className="w-2 h-2 mt-1.5 rounded-full bg-tertiary shrink-0"></div>
                   <div>
                     <p className="text-sm text-white font-bold mb-1">Welcome to Aetheric Cinema! 🍿</p>
-                    <p className="text-xs text-on-surface-variant">Halo! Saya <strong>Dewanto</strong>, developer di balik web ini. Selamat datang di Aetheric Cinema! Nikmati ribuan film gratis berkualitas HD tanpa batas. Siapkan popcorn mu dan selamat menonton!</p>
+                    <p className="text-xs text-on-surface-variant">Halo! Saya <strong>Dewanto</strong>, developer di balik web ini. Selamat datang di Aetheric Cinema! Nikmati ribuan film gratis berkualitas HD tanpa batas.</p>
                     <p className="text-[10px] text-white/40 mt-2">1 day ago</p>
                   </div>
                 </div>
