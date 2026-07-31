@@ -87,6 +87,44 @@ export const getContactMessages = async () => {
   return [];
 };
 
+export const broadcastNotification = async (title, message) => {
+  if (isFirebaseConfigured()) {
+    try {
+      const notifRef = collection(db, 'notifications');
+      await addDoc(notifRef, {
+        title,
+        message,
+        createdAt: new Date().toISOString()
+      });
+      return true;
+    } catch (e) {
+      console.error("Failed to broadcast notification", e);
+      return false;
+    }
+  }
+  return false;
+};
+
+export const getLatestNotifications = async () => {
+  if (isFirebaseConfigured()) {
+    try {
+      const notifRef = collection(db, 'notifications');
+      const q = query(notifRef, orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      const notifications = [];
+      snapshot.forEach(doc => {
+        notifications.push({ id: doc.id, ...doc.data() });
+      });
+      // Return top 5 notifications
+      return notifications.slice(0, 5);
+    } catch (e) {
+      console.error("Failed to get notifications", e);
+      return [];
+    }
+  }
+  return [];
+};
+
 // WATCHLIST APIS
 export const getWatchlist = async () => {
   const userId = getCurrentUserId();

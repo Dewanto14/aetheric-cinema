@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { getLatestNotifications } from '../services/db';
 import { Search, Bell, X, Filter, Menu } from 'lucide-react';
 import { searchMulti, getImageUrl, getGenres, getTVGenres } from '../services/tmdb';
 
@@ -7,6 +8,8 @@ export default function Navbar() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [liveNotifications, setLiveNotifications] = useState([]);
+  const [hasUnread, setHasUnread] = useState(false);
   const searchRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,8 +26,10 @@ export default function Navbar() {
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
+    let userObj = null;
     if (userData) {
-      setUser(JSON.parse(userData));
+      userObj = JSON.parse(userData);
+      setUser(userObj);
     } else {
       setUser(null);
     }
@@ -38,6 +43,32 @@ export default function Navbar() {
       getTVGenres().then(data => {
         if (data.genres) setGenres(data.genres.filter(g => g.id !== 16));
       });
+    }
+
+    // Fetch live notifications
+    const fetchNotifications = async () => {
+      try {
+        const notifs = await getLatestNotifications();
+        setLiveNotifications(notifs);
+        
+        // Check if there are any new unread notifications
+        if (notifs.length > 0) {
+          const lastRead = localStorage.getItem('lastReadNotificationAt');
+          const latestNotifTime = new Date(notifs[0].createdAt).getTime();
+          
+          if (!lastRead || latestNotifTime > parseInt(lastRead)) {
+            setHasUnread(true);
+          } else {
+            setHasUnread(false);
+          }
+        }
+      } catch (e) {
+        console.error("Error fetching notifications", e);
+      }
+    };
+    
+    if (userObj) {
+      fetchNotifications();
     }
   }, [location.pathname]);
 
@@ -84,6 +115,15 @@ export default function Navbar() {
     setIsSearchOpen(false);
     setQuery('');
     navigate(`/${item.media_type === 'tv' ? 'tv' : 'movie'}/${item.id}`);
+  };
+
+  const handleNotifClick = () => {
+    const newState = !isNotifOpen;
+    setIsNotifOpen(newState);
+    if (newState) {
+      setHasUnread(false);
+      localStorage.setItem('lastReadNotificationAt', Date.now().toString());
+    }
   };
 
   return (
@@ -173,40 +213,37 @@ export default function Navbar() {
         )}
 
         <div className="relative" ref={notifRef}>
-          <button onClick={() => setIsNotifOpen(!isNotifOpen)} className="text-on-surface-variant hover:text-primary transition-colors relative mt-1">
+          <button onClick={handleNotifClick} className="text-on-surface-variant hover:text-primary transition-colors relative mt-1">
             <Bell size={20}/>
-            <span className="absolute top-0 right-0 w-2 h-2 bg-error rounded-full animate-pulse"></span>
+            {hasUnread && <span className="absolute top-0 right-0 w-2 h-2 bg-error rounded-full animate-pulse"></span>}
           </button>
           
           {isNotifOpen && (
             <div className="absolute top-12 right-0 w-[300px] sm:w-80 glass-panel bg-[#100563]/95 backdrop-blur-3xl z-[200] rounded-xl shadow-2xl border-white/20 overflow-hidden flex flex-col">
               <div className="p-4 border-b border-white/10 flex justify-between items-center">
                 <span className="font-bold text-white flex items-center gap-2"><Bell size={16} className="text-primary"/> Notifications</span>
-                <span className="text-xs text-primary cursor-pointer hover:underline">Mark all read</span>
+                <button onClick={() => { setHasUnread(false); localStorage.setItem('lastReadNotificationAt', Date.now().toString()); }} className="text-xs text-primary hover:text-white transition-colors">Mark all read</button>
               </div>
-              <div className="flex flex-col max-h-80 overflow-y-auto">
-                <div onClick={() => { navigate('/help'); setIsNotifOpen(false); }} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
-                  <div className="w-2 h-2 mt-1.5 rounded-full bg-primary shrink-0 animate-pulse"></div>
-                  <div>
-                    <p className="text-sm text-white font-bold mb-1">Developer Update 🚀</p>
-                    <p className="text-xs text-on-surface-variant">Server Embed.su and AutoEmbed are now available! You can switch servers to find Indonesian subtitles easily.</p>
-                    <p className="text-[10px] text-white/40 mt-2">1 hour ago</p>
+              <div className="flex flex-col max-h-80 overflow-y-auto custom-scrollbar">
+                {liveNotifications.map((notif) => (
+                  <div key={notif.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3 group">
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/30">
+                      <span className="text-primary text-[14px]">!</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-white font-bold mb-1">{notif.title}</p>
+                      <p className="text-xs text-on-surface-variant line-clamp-2">{notif.message}</p>
+                      <p className="text-[10px] text-white/40 mt-2">{new Date(notif.createdAt).toLocaleDateString()}</p>
+                    </div>
                   </div>
-                </div>
-                <div onClick={() => { navigate('/watch/movie/533535'); setIsNotifOpen(false); }} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
-                  <div className="w-2 h-2 mt-1.5 rounded-full bg-secondary shrink-0"></div>
-                  <div>
-                    <p className="text-sm text-white font-bold mb-1">New Movie Release 🎬</p>
-                    <p className="text-xs text-on-surface-variant">Deadpool & Wolverine is now available in 4K HDR! Watch it now.</p>
-                    <p className="text-[10px] text-white/40 mt-2">5 hours ago</p>
-                  </div>
-                </div>
+                ))}
                 <div onClick={() => { navigate('/profile'); setIsNotifOpen(false); }} className="p-4 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
-                  <div className="w-2 h-2 mt-1.5 rounded-full bg-tertiary shrink-0"></div>
+                  <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center shrink-0 border border-secondary/30">
+                    <span className="text-secondary text-[14px]">Hi</span>
+                  </div>
                   <div>
                     <p className="text-sm text-white font-bold mb-1">Welcome to Aetheric Cinema! 🍿</p>
                     <p className="text-xs text-on-surface-variant">Halo! Saya <strong>Dewanto</strong>, developer di balik web ini. Selamat datang di Aetheric Cinema! Nikmati ribuan film gratis berkualitas HD tanpa batas.</p>
-                    <p className="text-[10px] text-white/40 mt-2">1 day ago</p>
                   </div>
                 </div>
               </div>

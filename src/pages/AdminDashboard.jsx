@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getContactMessages, getTotalUserCount, getAllUsers } from '../services/db';
+import { getContactMessages, getTotalUserCount, getAllUsers, broadcastNotification } from '../services/db';
 
 export default function AdminDashboard() {
   const [messages, setMessages] = useState([]);
   const [userCount, setUserCount] = useState(0);
   const [usersList, setUsersList] = useState([]);
   const [showUsersModal, setShowUsersModal] = useState(false);
+  const [broadcastForm, setBroadcastForm] = useState({ title: '', message: '' });
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -40,6 +42,19 @@ export default function AdminDashboard() {
 
     fetchData();
   }, [navigate]);
+
+  const handleBroadcast = async (e) => {
+    e.preventDefault();
+    setIsBroadcasting(true);
+    const success = await broadcastNotification(broadcastForm.title, broadcastForm.message);
+    setIsBroadcasting(false);
+    if (success) {
+      alert("Broadcast sent successfully!");
+      setBroadcastForm({ title: '', message: '' });
+    } else {
+      alert("Failed to send broadcast.");
+    }
+  };
 
   return (
     <div className="pt-24 min-h-screen px-6 md:px-12 bg-background font-body text-on-surface">
@@ -86,12 +101,12 @@ export default function AdminDashboard() {
             <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
           </div>
         ) : messages.length === 0 ? (
-          <div className="glass-panel p-10 rounded-2xl text-center border border-white/10">
+          <div className="glass-panel p-10 rounded-2xl text-center border border-white/10 mb-10">
             <span className="material-symbols-outlined text-6xl text-on-surface-variant mb-4">drafts</span>
             <p className="text-on-surface-variant font-body-lg">Inbox is empty. It's quiet... too quiet.</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 mb-10">
             {messages.map(msg => (
               <div key={msg.id} className="glass-panel p-6 rounded-2xl border border-white/10 hover:border-primary/50 transition-colors group relative overflow-hidden">
                 {!msg.read && <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>}
@@ -116,6 +131,30 @@ export default function AdminDashboard() {
             ))}
           </div>
         )}
+
+        {/* Broadcast Center */}
+        <h2 className="font-headline-md text-2xl text-white font-bold mb-6 flex items-center gap-3">
+          <span className="material-symbols-outlined text-error">campaign</span>
+          Broadcast Center
+        </h2>
+        <div className="glass-panel p-8 rounded-2xl border border-error/30 relative overflow-hidden mb-10">
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-error/10 rounded-full blur-3xl pointer-events-none"></div>
+          <p className="text-on-surface-variant font-body-md mb-6">Send a push notification to all users. This will appear in their notification bell immediately.</p>
+          <form onSubmit={handleBroadcast} className="space-y-4 max-w-2xl">
+            <div>
+              <label className="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Title</label>
+              <input type="text" value={broadcastForm.title} onChange={e => setBroadcastForm({...broadcastForm, title: e.target.value})} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-error/50" placeholder="e.g., New 4K Movie Available!" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Message</label>
+              <textarea required value={broadcastForm.message} onChange={e => setBroadcastForm({...broadcastForm, message: e.target.value})} rows="3" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-error/50 resize-none" placeholder="Write your announcement here..."></textarea>
+            </div>
+            <button type="submit" disabled={isBroadcasting} className="px-8 py-3 bg-error text-white rounded-xl font-bold shadow-[0_0_20px_rgba(255,0,0,0.3)] hover:shadow-[0_0_30px_rgba(255,0,0,0.5)] transition-all disabled:opacity-50 flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm">send</span>
+              {isBroadcasting ? 'Broadcasting...' : 'Send to All Users'}
+            </button>
+          </form>
+        </div>
 
         {/* Users Modal */}
         {showUsersModal && (
