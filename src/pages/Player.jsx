@@ -173,6 +173,19 @@ export default function Player() {
           {/* Player Frame */}
           <div className="w-full lg:w-3/4">
             
+            {/* Ad Education Banner */}
+            <div className="bg-primary/10 border border-primary/30 rounded-lg p-3 md:p-4 mb-4 flex items-start gap-3">
+              <span className="material-symbols-outlined text-primary shrink-0" style={{ fontSize: '20px' }}>info</span>
+              <div>
+                <p className="font-body-md text-sm md:text-base text-primary-fixed font-bold mb-1">
+                  Tips Menonton Lancar
+                </p>
+                <p className="font-body-sm text-xs md:text-sm text-on-surface-variant leading-relaxed">
+                  Kami menggunakan server gratis. <strong>Jika muncul iklan tab baru saat video pertama kali di-klik, cukup tutup tab tersebut</strong>, lalu kembali ke halaman ini. Video akan berjalan lancar setelahnya.
+                </p>
+              </div>
+            </div>
+
             <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 shadow-[0_0_60px_rgba(212,165,255,0.2)] group">
               
               {/* Actual iframe embedding player server */}
