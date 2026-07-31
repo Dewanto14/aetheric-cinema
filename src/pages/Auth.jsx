@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { getUserByEmail, createUser } from '../services/db';
+import { getUserByEmail, createUser, getTotalUserCount } from '../services/db';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -30,6 +30,13 @@ export default function Auth() {
           setErrorMsg('Account already exists. Please sign in instead.');
           return;
         }
+        // Check quota before creating new user
+        const totalUsers = await getTotalUserCount();
+        if (totalUsers >= 200) {
+          setErrorMsg('Maaf, pendaftaran saat ini ditutup. Kuota 200 akun eksklusif Aetheric Cinema sudah penuh. Silahkan hubungi developer.');
+          return;
+        }
+
         // Create new user if not exists and trying to register
         dbUser = await createUser({
           email: cleanEmail,

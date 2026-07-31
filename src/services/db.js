@@ -1,5 +1,5 @@
 import { db, isFirebaseConfigured } from './firebase';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs, getCountFromServer } from 'firebase/firestore';
 
 // Fallback logic uses localStorage if Firebase is not configured
 
@@ -12,6 +12,21 @@ const getCurrentUserId = () => {
     } catch(e) {}
   }
   return null;
+};
+
+export const getTotalUserCount = async () => {
+  if (isFirebaseConfigured()) {
+    try {
+      const coll = collection(db, 'users');
+      const snapshot = await getCountFromServer(coll);
+      return snapshot.data().count;
+    } catch (e) {
+      console.error("Failed to get user count", e);
+      return 0;
+    }
+  }
+  // Fallback if no firebase, just return 0 to pass
+  return 0;
 };
 
 // WATCHLIST APIS
