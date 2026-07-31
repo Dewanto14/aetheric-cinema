@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getMovieDetails, getTVDetails, getTVSeason, getImageUrl } from '../services/tmdb';
 import { addToWatchlist, checkInWatchlist, removeFromWatchlist } from '../services/db';
-import { PlayCircle, Plus, Check, Star, MonitorPlay, Layers, ChevronDown } from 'lucide-react';
+import { PlayCircle, Plus, Check, Star, MonitorPlay, Layers, ChevronDown, Share2 } from 'lucide-react';
 
 export default function MovieDetail() {
   const { id } = useParams();
@@ -59,6 +59,23 @@ export default function MovieDetail() {
         media_type: isTV ? 'tv' : 'movie'
       });
       setIsInList(true);
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: media.title || media.name,
+          text: `Check out ${media.title || media.name} on Aetheric Cinema!`,
+          url: window.location.href
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+      }
+    } catch (err) {
+      console.error('Error sharing:', err);
     }
   };
 
@@ -143,9 +160,14 @@ export default function MovieDetail() {
                   <PlayCircle size={24} /> Play S{selectedSeason} E1
                 </button>
               )}
-              <button onClick={toggleWatchlist} className={`w-full py-3 md:py-4 rounded-full border border-white/20 glass hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-sm md:text-base ${isInList ? 'text-tertiary' : 'text-on-surface'}`}>
-                {isInList ? <><Check size={24} /> Added</> : <><Plus size={24} /> Watchlist</>}
-              </button>
+              <div className="flex gap-2 w-full">
+                <button onClick={toggleWatchlist} className={`flex-1 py-3 md:py-4 rounded-full border border-white/20 glass hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-sm md:text-base ${isInList ? 'text-tertiary' : 'text-on-surface'}`}>
+                  {isInList ? <><Check size={24} /> Added</> : <><Plus size={24} /> Watchlist</>}
+                </button>
+                <button onClick={handleShare} className="aspect-square py-3 md:py-4 px-4 md:px-5 rounded-full border border-white/20 glass hover:bg-white/10 transition-all flex items-center justify-center text-on-surface" title="Share">
+                  <Share2 size={24} />
+                </button>
+              </div>
             </div>
 
             <div className="pt-6 border-t border-white/10 mt-2">

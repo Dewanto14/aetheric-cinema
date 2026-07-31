@@ -8,6 +8,9 @@ export default function MyList() {
   const [list, setList] = useState([]);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
+  const [layout, setLayout] = useState('grid');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const fetchList = async () => {
     try {
@@ -48,12 +51,21 @@ export default function MyList() {
           <h1 className="font-display-lg text-3xl md:text-display-lg text-on-surface mb-2 tracking-tight">My Collection</h1>
           <p className="text-on-surface-variant font-body-md md:font-body-lg md:text-body-lg opacity-80">Your sanctuary of curated stories and late-night escapes.</p>
         </div>
-        <div className="flex gap-3">
-          <button className="px-6 py-2 rounded-full glass bg-white/5 border border-white/10 text-label-sm hover:bg-white/10 transition-all flex items-center gap-2">
-            <SlidersHorizontal size={16} /> Filter
-          </button>
-          <button className="px-6 py-2 rounded-full glass bg-white/5 border border-white/10 text-label-sm hover:bg-white/10 transition-all flex items-center gap-2">
-            <LayoutGrid size={16} /> Layout
+        <div className="flex gap-3 relative">
+          <div className="relative">
+            <button onClick={() => setIsFilterOpen(!isFilterOpen)} className="px-6 py-2 rounded-full glass bg-white/5 border border-white/10 text-label-sm hover:bg-white/10 transition-all flex items-center gap-2">
+              <SlidersHorizontal size={16} /> {filter === 'all' ? 'All' : filter === 'movie' ? 'Movies' : 'TV Series'}
+            </button>
+            {isFilterOpen && (
+              <div className="absolute top-12 left-0 w-40 glass-panel border-white/20 rounded-xl overflow-hidden shadow-2xl z-50 flex flex-col">
+                <button onClick={() => { setFilter('all'); setIsFilterOpen(false); }} className={`px-4 py-3 text-sm text-left hover:bg-white/10 transition-colors ${filter === 'all' ? 'text-primary font-bold bg-primary/10' : 'text-white'}`}>All Items</button>
+                <button onClick={() => { setFilter('movie'); setIsFilterOpen(false); }} className={`px-4 py-3 text-sm text-left hover:bg-white/10 transition-colors ${filter === 'movie' ? 'text-primary font-bold bg-primary/10' : 'text-white'}`}>Movies Only</button>
+                <button onClick={() => { setFilter('tv'); setIsFilterOpen(false); }} className={`px-4 py-3 text-sm text-left hover:bg-white/10 transition-colors ${filter === 'tv' ? 'text-primary font-bold bg-primary/10' : 'text-white'}`}>TV Series Only</button>
+              </div>
+            )}
+          </div>
+          <button onClick={() => setLayout(layout === 'grid' ? 'list' : 'grid')} className="px-6 py-2 rounded-full glass bg-white/5 border border-white/10 text-label-sm hover:bg-white/10 transition-all flex items-center gap-2">
+            <LayoutGrid size={16} /> {layout === 'grid' ? 'Grid' : 'List'}
           </button>
         </div>
       </header>
@@ -101,17 +113,39 @@ export default function MyList() {
             <Bookmark size={24} className="text-primary fill-primary/20" /> Saved to Watch
           </h2>
           <div className="flex items-center gap-4 text-on-surface-variant font-label-sm text-label-sm">
-            <span>{list.length} Items</span>
+            <span>{list.filter(item => filter === 'all' ? true : filter === 'movie' ? (!item.media_type || item.media_type === 'movie') : item.media_type === 'tv').length} Items</span>
           </div>
         </div>
 
         {loading ? (
           <div className="text-primary animate-pulse">Loading your collection...</div>
         ) : (
-          <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-card-gap">
-            {list.map((movie) => {
+          <div className={layout === 'grid' ? "grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-card-gap" : "flex flex-col gap-4"}>
+            {list.filter(item => filter === 'all' ? true : filter === 'movie' ? (!item.media_type || item.media_type === 'movie') : item.media_type === 'tv').map((movie) => {
               const tmdbId = movie.movieId || movie.id;
               const uniqueKey = movie.id + '-' + tmdbId; // ensure unique key
+              
+              if (layout === 'list') {
+                return (
+                  <div key={uniqueKey} className="group relative flex gap-4 p-4 rounded-xl glass bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                    <div className="w-24 md:w-32 aspect-[2/3] rounded-lg overflow-hidden shrink-0 relative">
+                      <img src={getImageUrl(movie.poster_path, 'w300')} alt={movie.title || movie.name} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                        <Link to={`/play/${tmdbId}`} className="text-white hover:text-primary transition-colors"><PlayCircle size={32}/></Link>
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-center flex-grow">
+                      <h3 className="font-bold text-on-surface text-lg md:text-xl">{movie.title || movie.name}</h3>
+                      <p className="text-on-surface-variant text-sm mt-1 uppercase tracking-wider">{movie.media_type || 'Movie'}</p>
+                      <div className="mt-4 flex gap-3">
+                        <Link to={`/${movie.media_type || 'movie'}/${tmdbId}`} className="px-4 py-2 rounded-full bg-primary/20 text-primary font-bold text-xs hover:bg-primary/30 transition-colors">Details</Link>
+                        <button onClick={(e) => handleRemove(e, tmdbId)} className="px-4 py-2 rounded-full bg-error/10 text-error font-bold text-xs hover:bg-error/20 transition-colors">Remove</button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
               return (
               <div key={uniqueKey} className="group relative flex flex-col gap-3">
                 <div className="relative aspect-[2/3] rounded-lg overflow-hidden glass bg-white/5 border border-white/10 bloom-hover transition-all duration-300">
@@ -153,12 +187,14 @@ export default function MyList() {
             )})}
 
             {/* Add More Card */}
-            <Link to="/" className="flex flex-col gap-3 group">
-              <div className="aspect-[2/3] rounded-lg border-2 border-dashed border-white/10 glass bg-white/5 flex flex-col items-center justify-center gap-4 text-on-surface-variant hover:border-primary/40 hover:text-primary transition-all duration-300">
-                <PlusCircle size={36} />
-                <span className="font-label-sm text-label-sm">Explore More</span>
-              </div>
-            </Link>
+            {layout === 'grid' && (
+              <Link to="/" className="flex flex-col gap-3 group">
+                <div className="aspect-[2/3] rounded-lg border-2 border-dashed border-white/10 glass bg-white/5 flex flex-col items-center justify-center gap-4 text-on-surface-variant hover:border-primary/40 hover:text-primary transition-all duration-300">
+                  <PlusCircle size={36} />
+                  <span className="font-label-sm text-label-sm">Explore More</span>
+                </div>
+              </Link>
+            )}
           </div>
         )}
       </section>

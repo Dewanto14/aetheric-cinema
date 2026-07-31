@@ -14,7 +14,9 @@ export default function Navbar() {
   const [genres, setGenres] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   const filterRef = useRef(null);
+  const notifRef = useRef(null);
 
   const currentGenreId = new URLSearchParams(location.search).get('genre');
   const showFilter = ['/', '/series', '/anime'].includes(location.pathname);
@@ -60,6 +62,9 @@ export default function Navbar() {
       }
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setIsFilterOpen(false);
+      }
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setIsNotifOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -167,7 +172,39 @@ export default function Navbar() {
           </div>
         )}
 
-        <button className="hidden md:block text-on-surface-variant hover:text-primary transition-colors"><Bell size={20}/></button>
+        <div className="relative hidden md:block" ref={notifRef}>
+          <button onClick={() => setIsNotifOpen(!isNotifOpen)} className="text-on-surface-variant hover:text-primary transition-colors relative">
+            <Bell size={20}/>
+            <span className="absolute top-0 right-0 w-2 h-2 bg-error rounded-full animate-pulse"></span>
+          </button>
+          
+          {isNotifOpen && (
+            <div className="absolute top-12 right-0 w-72 glass-panel bg-[#100563]/95 backdrop-blur-3xl z-[200] rounded-xl shadow-2xl border-white/20 overflow-hidden flex flex-col">
+              <div className="p-4 border-b border-white/10 flex justify-between items-center">
+                <span className="font-bold text-white">Notifications</span>
+                <span className="text-xs text-primary cursor-pointer hover:underline">Mark all read</span>
+              </div>
+              <div className="flex flex-col max-h-80 overflow-y-auto">
+                <div className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
+                  <div className="w-2 h-2 mt-1.5 rounded-full bg-primary shrink-0"></div>
+                  <div>
+                    <p className="text-sm text-white font-bold mb-1">Welcome to Aetheric Cinema!</p>
+                    <p className="text-xs text-on-surface-variant">Your journey into the cinematic cosmos begins here.</p>
+                    <p className="text-[10px] text-white/40 mt-2">Just now</p>
+                  </div>
+                </div>
+                <div className="p-4 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
+                  <div className="w-2 h-2 mt-1.5 rounded-full bg-primary shrink-0"></div>
+                  <div>
+                    <p className="text-sm text-white font-bold mb-1">New Features Unlocked</p>
+                    <p className="text-xs text-on-surface-variant">Check out your new Watch History page and Filter options!</p>
+                    <p className="text-[10px] text-white/40 mt-2">2 hours ago</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
         {user ? (
           <Link to="/profile" className="w-10 h-10 rounded-full bg-primary/20 border-2 border-primary/50 flex items-center justify-center text-primary font-bold hover:scale-110 transition-transform overflow-hidden">
             <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />

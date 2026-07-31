@@ -142,6 +142,23 @@ export default function Player() {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: movie.title || movie.name,
+          text: `Watch ${movie.title || movie.name} on Aetheric Cinema!`,
+          url: window.location.href
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+      }
+    } catch (err) {
+      console.error('Error sharing:', err);
+    }
+  };
+
   const handleSilentFailover = () => {
     setServerIndex((prev) => prev + 1);
   };
@@ -259,7 +276,7 @@ export default function Player() {
                   <Plus size={18} />
                   {isInList ? 'Added' : 'My List'}
                 </button>
-                <button className="p-3 rounded-full border border-white/20 bg-white/5 text-on-surface hover:bg-white/10 transition-colors">
+                <button onClick={handleShare} className="p-3 rounded-full border border-white/20 bg-white/5 text-on-surface hover:bg-white/10 transition-colors" title="Share">
                   <Share2 size={18} />
                 </button>
               </div>

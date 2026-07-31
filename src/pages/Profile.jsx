@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [isTwilightMode, setIsTwilightMode] = useState(true);
+  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -149,7 +150,7 @@ export default function Profile() {
                 <p className="text-xl font-bold">$14.99/mo</p>
                 <p className="text-xs text-on-surface-variant mt-2">Next billing: Nov 14, 2024</p>
               </div>
-              <button onClick={() => alert('Upgrade modal coming soon!')} className="w-full py-3 gradient-btn rounded-xl font-bold transition-all bloom-hover">
+              <button onClick={() => setIsPremiumModalOpen(true)} className="w-full py-3 gradient-btn rounded-xl font-bold transition-all bloom-hover">
                 Upgrade Plan
               </button>
             </section>
@@ -285,6 +286,48 @@ export default function Profile() {
           </div>
         </footer>
       </main>
+
+      {/* Premium Upgrade Modal */}
+      {isPremiumModalOpen && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+          <div className="glass-panel w-full max-w-lg rounded-2xl p-8 relative border border-white/20 shadow-[0_0_80px_rgba(212,165,255,0.3)]">
+            <button onClick={() => setIsPremiumModalOpen(false)} className="absolute top-4 right-4 text-on-surface-variant hover:text-white transition-colors">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 mx-auto bg-primary/20 rounded-full flex items-center justify-center mb-4">
+                <span className="material-symbols-outlined text-primary text-3xl">workspace_premium</span>
+              </div>
+              <h3 className="font-display-lg text-2xl md:text-3xl font-bold text-white mb-2">Upgrade to Twilight Premium</h3>
+              <p className="text-on-surface-variant text-sm">Experience Aetheric Cinema without limits.</p>
+            </div>
+            
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-tertiary">check_circle</span>
+                <span className="text-white text-sm">Ad-free streaming across all devices</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-tertiary">check_circle</span>
+                <span className="text-white text-sm">Unlock 4K HDR & Dolby Atmos</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-tertiary">check_circle</span>
+                <span className="text-white text-sm">Unlimited Watch History & Playlists</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-tertiary">check_circle</span>
+                <span className="text-white text-sm">Priority Support</span>
+              </div>
+            </div>
+            
+            <button onClick={() => { alert('Redirecting to payment gateway...'); setIsPremiumModalOpen(false); }} className="w-full py-4 bg-gradient-to-r from-primary to-inverse-primary rounded-xl font-bold text-white shadow-[0_0_20px_rgba(212,165,255,0.4)] hover:shadow-[0_0_30px_rgba(212,165,255,0.6)] transition-all">
+              Start Free Trial - $14.99/mo
+            </button>
+            <p className="text-center text-[10px] text-on-surface-variant mt-4">Cancel anytime. Terms and conditions apply.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
