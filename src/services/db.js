@@ -1,5 +1,5 @@
 import { db, isFirebaseConfigured } from './firebase';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs } from 'firebase/firestore';
 
 // Fallback logic uses localStorage if Firebase is not configured
 
@@ -101,6 +101,20 @@ export const checkInWatchlist = async (movieId) => {
 
 // USER APIS (Mocking db.json behavior with localStorage and Firebase)
 export const getUserByEmail = async (email) => {
+  if (isFirebaseConfigured()) {
+    try {
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('email', '==', email));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        return { ...userData, id: querySnapshot.docs[0].id };
+      }
+    } catch (e) {
+      console.error("Firebase fetch user error", e);
+    }
+  }
+
   try {
     const usersStr = localStorage.getItem('mock_users');
     const users = usersStr ? JSON.parse(usersStr) : [];
