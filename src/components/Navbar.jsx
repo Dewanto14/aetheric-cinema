@@ -150,19 +150,21 @@ export default function Navbar() {
       </div>
       
       <div className="flex items-center gap-3 md:gap-6">
-        <div className="relative" ref={searchRef}>
+        <div className="static md:relative" ref={searchRef}>
           {isSearchOpen ? (
-            <div className="flex items-center bg-surface-container/50 border border-white/10 rounded-full px-4 py-1.5 animate-pulse-slow">
+            <div className="absolute inset-0 md:relative md:inset-auto z-[150] flex items-center bg-[#100563] md:bg-surface-container/50 border border-white/10 rounded-full px-4 animate-pulse-slow w-full md:w-auto h-full md:h-auto md:py-1.5">
+              <Search size={18} className="text-white/50 md:hidden shrink-0" />
               <input 
                 type="text" 
                 placeholder="Search dreams..." 
                 autoFocus
-                className="bg-transparent border-none text-white outline-none w-48 text-sm"
+                className="bg-transparent border-none text-white outline-none flex-1 md:w-48 text-sm px-3 md:px-0"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
-              <button onClick={() => { setIsSearchOpen(false); setQuery(''); }} className="text-white/50 hover:text-white">
-                <X size={16} />
+              <button onClick={() => { setIsSearchOpen(false); setQuery(''); }} className="text-white/50 hover:text-white p-2 md:p-0 shrink-0">
+                <X size={20} className="hidden md:block w-4 h-4" />
+                <X size={20} className="md:hidden" />
               </button>
             </div>
           ) : (
@@ -173,7 +175,7 @@ export default function Navbar() {
 
           {/* Search Dropdown */}
           {isSearchOpen && results.length > 0 && (
-            <div className="fixed sm:absolute top-20 sm:top-12 right-[5%] sm:right-0 w-[90%] sm:w-80 glass-panel bg-[#100563]/95 backdrop-blur-3xl z-[200] rounded-xl shadow-2xl border-white/20 overflow-hidden flex flex-col">
+            <div className="fixed md:absolute top-20 md:top-12 right-[5%] md:right-0 w-[90%] md:w-80 glass-panel bg-[#100563]/95 backdrop-blur-3xl z-[200] rounded-xl shadow-2xl border-white/20 overflow-hidden flex flex-col">
               {results.map(item => (
                 <div key={item.id} onClick={() => handleResultClick(item)} className="flex items-center gap-3 p-3 hover:bg-white/10 cursor-pointer transition-colors border-b border-white/5 last:border-0">
                   <img src={getImageUrl(item.poster_path, 'w92')} alt={item.title || item.name} className="w-10 h-14 object-cover rounded shadow-md" />
