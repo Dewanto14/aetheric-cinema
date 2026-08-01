@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { getLatestNotifications } from '../services/db';
-import { Search, Bell, X, Filter, Menu } from 'lucide-react';
+import { Search, Bell, X, Filter, Menu, Film, Tv, PlaySquare, Bookmark, Check } from 'lucide-react';
 import { searchMulti, getImageUrl, getGenres, getTVGenres } from '../services/tmdb';
 
 export default function Navbar() {
@@ -20,6 +20,7 @@ export default function Navbar() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const filterRef = useRef(null);
   const notifRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   const currentGenreId = new URLSearchParams(location.search).get('genre');
   const showFilter = ['/', '/series', '/anime'].includes(location.pathname);
@@ -34,7 +35,6 @@ export default function Navbar() {
       setUser(null);
     }
     
-    // Fetch genres based on route
     if (location.pathname === '/') {
       getGenres().then(data => setGenres(data.genres || []));
     } else if (location.pathname === '/series') {
@@ -45,20 +45,15 @@ export default function Navbar() {
       });
     }
 
-    // Fetch live notifications
     const fetchNotifications = async () => {
       try {
         const notifs = await getLatestNotifications();
         setLiveNotifications(notifs);
-        
-        // Check if user has read notifications
         const lastRead = localStorage.getItem('lastReadNotificationAt');
         
         if (!lastRead) {
-          // User has never opened notifications, show red dot for the Welcome message
           setHasUnread(true);
         } else if (notifs.length > 0) {
-          // Check if there are live notifications newer than the last read time
           const latestNotifTime = new Date(notifs[0].createdAt).getTime();
           if (latestNotifTime > parseInt(lastRead)) {
             setHasUnread(true);
@@ -82,7 +77,6 @@ export default function Navbar() {
     if (query.length > 2) {
       const delayDebounceFn = setTimeout(() => {
         searchMulti(query).then(data => {
-          // Filter to only show movies and tv shows
           setResults(data.results.filter(i => i.media_type === 'movie' || i.media_type === 'tv').slice(0, 5));
         });
       }, 500);
@@ -103,10 +97,13 @@ export default function Navbar() {
       if (notifRef.current && !notifRef.current.contains(event.target)) {
         setIsNotifOpen(false);
       }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setIsMobileMenuOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [searchRef, filterRef]);
+  }, [searchRef, filterRef, notifRef, mobileMenuRef]);
 
   const handleGenreSelect = (genreId, genreName) => {
     setIsFilterOpen(false);
@@ -123,10 +120,40 @@ export default function Navbar() {
     navigate(`/${item.media_type === 'tv' ? 'tv' : 'movie'}/${item.id}`);
   };
 
+  const handleMobileMenuClick = () => {
+    const newState = !isMobileMenuOpen;
+    setIsMobileMenuOpen(newState);
+    if (newState) {
+      setIsFilterOpen(false);
+      setIsSearchOpen(false);
+      setIsNotifOpen(false);
+    }
+  };
+
+  const handleFilterClick = () => {
+    const newState = !isFilterOpen;
+    setIsFilterOpen(newState);
+    if (newState) {
+      setIsMobileMenuOpen(false);
+      setIsSearchOpen(false);
+      setIsNotifOpen(false);
+    }
+  };
+
+  const handleSearchClick = () => {
+    setIsSearchOpen(true);
+    setIsMobileMenuOpen(false);
+    setIsFilterOpen(false);
+    setIsNotifOpen(false);
+  };
+
   const handleNotifClick = () => {
     const newState = !isNotifOpen;
     setIsNotifOpen(newState);
     if (newState) {
+      setIsMobileMenuOpen(false);
+      setIsFilterOpen(false);
+      setIsSearchOpen(false);
       setHasUnread(false);
       localStorage.setItem('lastReadNotificationAt', Date.now().toString());
     }
@@ -135,9 +162,37 @@ export default function Navbar() {
   return (
     <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-[100] glass rounded-full px-4 md:px-8 py-3 flex justify-between items-center shadow-[0_8px_32px_0_rgba(212,165,255,0.15)] hover:backdrop-blur-2xl transition-all duration-300">
       <div className="flex items-center gap-4 md:gap-12">
-        <button className="md:hidden text-on-surface-variant hover:text-primary transition-colors" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-          <Menu size={24} />
-        </button>
+        <div className="md:hidden relative" ref={mobileMenuRef}>
+          <button className="text-on-surface-variant hover:text-primary transition-colors" onClick={handleMobileMenuClick}>
+            <Menu size={24} />
+          </button>
+          
+          {/* Premium Mobile Menu Overlay */}
+          {isMobileMenuOpen && (
+            <div className="absolute top-12 -left-2 w-[260px] glass-panel bg-[#0a061d]/95 backdrop-blur-3xl z-[200] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden border border-white/10">
+              <div className="px-5 py-3 border-b border-white/5 bg-white/5">
+                <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Navigation</span>
+              </div>
+              <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className={`px-5 py-3.5 flex items-center gap-3 transition-colors font-bold ${location.pathname === '/' ? 'text-primary bg-primary/10 border-l-2 border-primary' : 'text-on-surface hover:bg-white/5 hover:text-primary border-l-2 border-transparent'}`}>
+                <Film size={18} className={location.pathname === '/' ? 'text-primary' : 'text-on-surface-variant'} />
+                Movies
+              </Link>
+              <Link to="/series" onClick={() => setIsMobileMenuOpen(false)} className={`px-5 py-3.5 flex items-center gap-3 transition-colors font-bold ${location.pathname === '/series' ? 'text-primary bg-primary/10 border-l-2 border-primary' : 'text-on-surface hover:bg-white/5 hover:text-primary border-l-2 border-transparent'}`}>
+                <Tv size={18} className={location.pathname === '/series' ? 'text-primary' : 'text-on-surface-variant'} />
+                Series
+              </Link>
+              <Link to="/anime" onClick={() => setIsMobileMenuOpen(false)} className={`px-5 py-3.5 flex items-center gap-3 transition-colors font-bold ${location.pathname === '/anime' ? 'text-primary bg-primary/10 border-l-2 border-primary' : 'text-on-surface hover:bg-white/5 hover:text-primary border-l-2 border-transparent'}`}>
+                <PlaySquare size={18} className={location.pathname === '/anime' ? 'text-primary' : 'text-on-surface-variant'} />
+                Anime
+              </Link>
+              <Link to="/mylist" onClick={() => setIsMobileMenuOpen(false)} className={`px-5 py-3.5 flex items-center gap-3 transition-colors font-bold ${location.pathname === '/mylist' ? 'text-primary bg-primary/10 border-l-2 border-primary' : 'text-on-surface hover:bg-white/5 hover:text-primary border-l-2 border-transparent'}`}>
+                <Bookmark size={18} className={location.pathname === '/mylist' ? 'text-primary' : 'text-on-surface-variant'} />
+                My List
+              </Link>
+            </div>
+          )}
+        </div>
+        
         <Link to="/" className="font-display-lg text-[20px] md:text-headline-md text-primary drop-shadow-[0_0_8px_rgba(222,183,255,0.5)]">
           Aetheric
         </Link>
@@ -168,7 +223,7 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <button onClick={() => setIsSearchOpen(true)} className="text-on-surface-variant hover:text-primary transition-colors mt-1">
+            <button onClick={handleSearchClick} className="text-on-surface-variant hover:text-primary transition-colors mt-1">
               <Search size={20}/>
             </button>
           )}
@@ -192,29 +247,37 @@ export default function Navbar() {
         {showFilter && (
           <div className="relative" ref={filterRef}>
             <button 
-              onClick={() => setIsFilterOpen(!isFilterOpen)} 
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${currentGenreId ? 'bg-primary/20 text-primary border border-primary/30' : 'text-on-surface-variant hover:text-primary'}`}
+              onClick={handleFilterClick} 
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${currentGenreId ? 'bg-primary/20 text-primary border border-primary/30 shadow-[0_0_15px_rgba(212,165,255,0.2)]' : 'text-on-surface-variant hover:text-primary'}`}
             >
               <Filter size={18} />
             </button>
             
+            {/* Premium Filter Dropdown */}
             {isFilterOpen && (
-              <div className="absolute top-12 right-0 w-48 glass-panel bg-[#100563]/95 backdrop-blur-3xl z-[200] rounded-xl shadow-2xl border-white/20 overflow-hidden flex flex-col max-h-80 overflow-y-auto">
-                <div 
-                  onClick={() => handleGenreSelect(null, null)} 
-                  className={`px-4 py-2 text-sm cursor-pointer hover:bg-white/10 transition-colors ${!currentGenreId ? 'bg-primary/20 text-primary font-bold' : 'text-on-surface'}`}
-                >
-                  All Genres
+              <div className="absolute top-12 -right-[100px] sm:right-0 w-[240px] glass-panel bg-[#0a061d]/95 backdrop-blur-3xl z-[200] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[70vh] sm:max-h-96">
+                <div className="px-5 py-3 border-b border-white/5 bg-white/5 sticky top-0 z-10 backdrop-blur-xl">
+                  <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Select Genre</span>
                 </div>
-                {genres.map(g => (
+                <div className="overflow-y-auto custom-scrollbar p-2">
                   <div 
-                    key={g.id} 
-                    onClick={() => handleGenreSelect(g.id, g.name)} 
-                    className={`px-4 py-2 text-sm cursor-pointer hover:bg-white/10 transition-colors ${currentGenreId == g.id ? 'bg-primary/20 text-primary font-bold' : 'text-on-surface'}`}
+                    onClick={() => handleGenreSelect(null, null)} 
+                    className={`px-3 py-2.5 rounded-xl text-sm cursor-pointer flex items-center justify-between transition-all mb-1 ${!currentGenreId ? 'bg-primary/20 text-primary font-bold shadow-[inset_0_0_15px_rgba(212,165,255,0.15)] border border-primary/20' : 'text-on-surface hover:bg-white/5 hover:text-white'}`}
                   >
-                    {g.name}
+                    All Genres
+                    {!currentGenreId && <Check size={16} className="text-primary" />}
                   </div>
-                ))}
+                  {genres.map(g => (
+                    <div 
+                      key={g.id} 
+                      onClick={() => handleGenreSelect(g.id, g.name)} 
+                      className={`px-3 py-2.5 rounded-xl text-sm cursor-pointer flex items-center justify-between transition-all mb-1 ${currentGenreId == g.id ? 'bg-primary/20 text-primary font-bold shadow-[inset_0_0_15px_rgba(212,165,255,0.15)] border border-primary/20' : 'text-on-surface hover:bg-white/5 hover:text-white'}`}
+                    >
+                      {g.name}
+                      {currentGenreId == g.id && <Check size={16} className="text-primary" />}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -228,7 +291,7 @@ export default function Navbar() {
           
           {isNotifOpen && (
             <div className="fixed sm:absolute top-20 sm:top-12 right-[5%] sm:right-0 w-[90%] sm:w-80 glass-panel bg-[#100563]/95 backdrop-blur-3xl z-[200] rounded-xl shadow-2xl border-white/20 overflow-hidden flex flex-col">
-              <div className="p-4 border-b border-white/10 flex justify-between items-center">
+              <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
                 <span className="font-bold text-white flex items-center gap-2"><Bell size={16} className="text-primary"/> Notifications</span>
                 <button onClick={() => { setHasUnread(false); localStorage.setItem('lastReadNotificationAt', Date.now().toString()); }} className="text-xs text-primary hover:text-white transition-colors">Mark all read</button>
               </div>
@@ -274,16 +337,6 @@ export default function Navbar() {
           </Link>
         )}
       </div>
-      
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div className="absolute top-16 left-0 w-64 glass-panel bg-[#100563]/95 backdrop-blur-3xl z-[200] rounded-2xl shadow-2xl flex flex-col overflow-hidden md:hidden border-white/20">
-          <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="px-6 py-4 text-on-surface hover:bg-white/10 transition-colors font-bold border-b border-white/5">Movies</Link>
-          <Link to="/series" onClick={() => setIsMobileMenuOpen(false)} className="px-6 py-4 text-on-surface hover:bg-white/10 transition-colors font-bold border-b border-white/5">Series</Link>
-          <Link to="/anime" onClick={() => setIsMobileMenuOpen(false)} className="px-6 py-4 text-on-surface hover:bg-white/10 transition-colors font-bold border-b border-white/5">Anime</Link>
-          <Link to="/mylist" onClick={() => setIsMobileMenuOpen(false)} className="px-6 py-4 text-on-surface hover:bg-white/10 transition-colors font-bold">My List</Link>
-        </div>
-      )}
     </nav>
   );
 }
