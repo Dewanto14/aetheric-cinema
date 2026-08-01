@@ -24,6 +24,9 @@ export default function MovieDetail() {
     fetchDetails.then(data => {
       setMedia(data);
       setLoading(false);
+      // SEO Title
+      document.title = `${data.title || data.name} - Aetheric Cinema`;
+      
       // Auto-select first season if it's TV
       if (isTV && data.seasons && data.seasons.length > 0) {
         // often season 0 is specials, try to pick season 1 if available

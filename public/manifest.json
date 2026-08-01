@@ -1,0 +1,21 @@
+{
+  "short_name": "Aetheric",
+  "name": "Aetheric Cinema",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/vite.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0a061d",
+  "display": "standalone",
+  "theme_color": "#d4a5ff",
+  "description": "Premium Streaming Service with Aetheric Design"
+}

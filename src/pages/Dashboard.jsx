@@ -8,6 +8,7 @@ export default function Dashboard() {
   const [trending, setTrending] = useState([]);
   const [popular, setPopular] = useState([]);
   const [topRated, setTopRated] = useState([]);
+  const [watchHistory, setWatchHistory] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterLoading, setFilterLoading] = useState(false);
@@ -26,6 +27,16 @@ export default function Dashboard() {
       setPopular(popularData.results);
       setTopRated(topData.results);
       setLoading(false);
+      
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        try {
+          const userObj = JSON.parse(userStr);
+          if (userObj.watchHistory && userObj.watchHistory.length > 0) {
+            setWatchHistory(userObj.watchHistory.slice(0, 10));
+          }
+        } catch (e) {}
+      }
     }).catch(err => {
       console.error(err);
       setLoading(false);
@@ -41,6 +52,34 @@ export default function Dashboard() {
       });
     }
   }, [selectedGenre]);
+
+  const renderContinueWatchingRow = (title, items) => {
+    if (!items || items.length === 0) return null;
+    return (
+      <section className="px-4 md:px-gutter lg:px-container-padding mb-12">
+        <h2 className="font-headline-md text-[20px] md:text-headline-md mb-6 text-tertiary-fixed">{title}</h2>
+        <CarouselContainer className="gap-4 md:gap-card-gap pb-4 -mx-4 md:-mx-gutter lg:-mx-container-padding px-4 md:px-gutter lg:px-container-padding">
+          {items.map(item => (
+            <Link to={`/play/${item.id}?type=${item.media_type || 'movie'}`} key={item.id} className="min-w-[140px] w-[140px] md:min-w-[200px] md:w-[200px] group cursor-pointer block relative">
+              <div className="relative aspect-video rounded-lg overflow-hidden glass-panel hover:border-tertiary-fixed transition-colors border border-white/10 mb-3 shadow-lg">
+                <img className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" 
+                     src={getImageUrl(item.backdrop_path || item.poster_path, 'w500')} alt={item.title} />
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <PlayCircle size={32} className="text-white drop-shadow-md" />
+                </div>
+                {/* Fake progress bar */}
+                <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20">
+                  <div className="h-full bg-tertiary-fixed" style={{ width: `${Math.random() * 40 + 20}%` }}></div>
+                </div>
+              </div>
+              <h4 className="font-body-md font-bold truncate text-on-surface text-sm md:text-base">{item.title}</h4>
+              <p className="text-[10px] text-tertiary uppercase tracking-widest mt-1">Continue Watching</p>
+            </Link>
+          ))}
+        </CarouselContainer>
+      </section>
+    );
+  };
 
   const renderMovieRow = (title, movies) => (
     <section className="px-4 md:px-gutter lg:px-container-padding mb-12">
@@ -145,6 +184,7 @@ export default function Dashboard() {
 
       {!loading && (
         <>
+          {renderContinueWatchingRow("Continue Watching", watchHistory)}
           {renderMovieRow("Trending Now", trending.slice(1))}
           {renderMovieRow("Popular Movies", popular)}
           {renderMovieRow("Top Rated", topRated)}

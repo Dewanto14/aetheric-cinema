@@ -126,6 +126,7 @@ export default function Player() {
     fetchMedia.then(data => {
       setMovie(data);
       setLoading(false);
+      document.title = `Watching ${data.title || data.name} - Aetheric Cinema`;
     });
     checkInWatchlist(id).then(status => setIsInList(status));
   }, [id, type]);
