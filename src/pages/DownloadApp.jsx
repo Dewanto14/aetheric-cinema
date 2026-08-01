@@ -43,7 +43,7 @@ export default function DownloadApp() {
 
             <div className="w-full md:w-auto flex flex-col gap-4 shrink-0">
               <a 
-                href="/Aetheric-Cinema.apk" 
+                href="/Aetheric.apk" 
                 download
                 className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-primary to-tertiary hover:from-primary/90 hover:to-tertiary/90 text-on-primary rounded-2xl font-bold text-lg transition-all shadow-[0_0_30px_rgba(212,165,255,0.4)] hover:shadow-[0_0_40px_rgba(212,165,255,0.6)] hover:scale-105 flex items-center justify-center gap-3"
               >
