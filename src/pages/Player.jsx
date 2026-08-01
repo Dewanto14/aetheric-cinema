@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { getMovieDetails, getTVDetails, getImageUrl } from '../services/tmdb';
-import { Star, Plus, Share2, PlayCircle } from 'lucide-react';
+import { getMovieDetails, getTVDetails, getTVSeason, getImageUrl } from '../services/tmdb';
+import { Star, Plus, Share2, PlayCircle, ChevronDown, Check } from 'lucide-react';
 import { addToWatchlist, checkInWatchlist, updateUser } from '../services/db';
 
 const SERVERS = [
@@ -42,18 +42,20 @@ export default function Player() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get('type') || 'movie';
-  const season = searchParams.get('season') || 1;
-  const episode = searchParams.get('episode') || 1;
+  const currentSeason = searchParams.get('season') || 1;
+  const currentEpisode = searchParams.get('episode') || 1;
+  
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isInList, setIsInList] = useState(false);
   const [subtitleSetting, setSubtitleSetting] = useState('English');
   const [serverIndex, setServerIndex] = useState(0);
   const [shieldActive, setShieldActive] = useState(true);
+  
+  const [episodes, setEpisodes] = useState([]);
+  const [selectedSeason, setSelectedSeason] = useState(parseInt(currentSeason));
 
   const activeServer = SERVERS[serverIndex % SERVERS.length];
-
-  // Window Focus Lock (Removed because it freezes the browser for legit users)
 
   // Track watch time
   useEffect(() => {
@@ -83,7 +85,6 @@ export default function Player() {
           const userObj = JSON.parse(userStr);
           const history = userObj.watchHistory || [];
           
-          // Remove if it exists to move it to the front
           const filteredHistory = history.filter(item => item.id !== movie.id);
           const newEntry = {
             id: movie.id,
@@ -94,7 +95,6 @@ export default function Player() {
           };
           filteredHistory.unshift(newEntry);
           
-          // Keep only top 100
           userObj.watchHistory = filteredHistory.slice(0, 100);
           
           localStorage.setItem('user', JSON.stringify(userObj));
@@ -130,6 +130,14 @@ export default function Player() {
     });
     checkInWatchlist(id).then(status => setIsInList(status));
   }, [id, type]);
+
+  useEffect(() => {
+    if (type === 'tv' && movie) {
+      getTVSeason(id, selectedSeason).then(data => {
+        setEpisodes(data.episodes || []);
+      }).catch(err => console.error("Failed to fetch episodes", err));
+    }
+  }, [id, type, selectedSeason, movie]);
 
   const handleAddToList = async () => {
     if (!isInList && movie) {
@@ -209,8 +217,8 @@ export default function Player() {
               
               {/* Actual iframe embedding player server */}
               <iframe
-                key={`${activeServer.id}-${id}-${season}-${episode}`}
-                src={activeServer.getUrl(type, id, season, episode)}
+                key={`${activeServer.id}-${id}-${currentSeason}-${currentEpisode}`}
+                src={activeServer.getUrl(type, id, currentSeason, currentEpisode)}
                 className="absolute top-0 left-0 w-full h-full border-0 z-10"
                 allowFullScreen
                 allow="autoplay; encrypted-media; picture-in-picture"
@@ -258,9 +266,9 @@ export default function Player() {
                 {movie.title || movie.name}
               </h1>
               
-              {type === 'tv' && season && episode && (
+              {type === 'tv' && currentSeason && currentEpisode && (
                 <div className="font-label-sm text-tertiary mb-2 uppercase tracking-widest">
-                  Season {season} • Episode {episode}
+                  Season {currentSeason} • Episode {currentEpisode}
                 </div>
               )}
               
@@ -291,6 +299,60 @@ export default function Player() {
                   <Share2 size={18} />
                 </button>
               </div>
+
+              {type === 'tv' && movie.seasons && movie.seasons.length > 0 && (
+                <div className="mt-6 border-t border-white/10 pt-4 flex-grow flex flex-col min-h-[300px]">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="font-bold text-white text-sm">Episodes</h3>
+                    <div className="relative">
+                      <select 
+                        className="appearance-none bg-white/5 border border-white/20 rounded-md px-3 py-1 pr-8 text-xs text-white focus:outline-none focus:border-primary cursor-pointer"
+                        value={selectedSeason}
+                        onChange={(e) => setSelectedSeason(Number(e.target.value))}
+                      >
+                        {movie.seasons.filter(s => s.season_number > 0).map(s => (
+                          <option key={s.id} value={s.season_number} className="bg-[#0a061d]">Season {s.season_number}</option>
+                        ))}
+                      </select>
+                      <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" />
+                    </div>
+                  </div>
+                  <div className="flex-grow overflow-y-auto custom-scrollbar flex flex-col gap-2 h-[300px]">
+                    {episodes.map(ep => (
+                      <Link 
+                        key={ep.id}
+                        to={`/play/${movie.id}?type=tv&season=${selectedSeason}&episode=${ep.episode_number}`}
+                        className={`flex gap-3 p-2 rounded-lg transition-colors border ${
+                          parseInt(currentEpisode) === ep.episode_number && parseInt(currentSeason) === selectedSeason
+                            ? 'bg-primary/20 border-primary/50'
+                            : 'bg-white/5 border-transparent hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="relative w-20 aspect-video rounded bg-white/10 overflow-hidden shrink-0 flex items-center justify-center">
+                          {ep.still_path ? (
+                            <img src={getImageUrl(ep.still_path, 'w185')} alt={ep.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <PlayCircle size={20} className="text-white/30" />
+                          )}
+                          {parseInt(currentEpisode) === ep.episode_number && parseInt(currentSeason) === selectedSeason && (
+                            <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                              <div className="w-6 h-6 rounded-full bg-primary/80 flex items-center justify-center">
+                                <PlayCircle size={14} className="text-white fill-white" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-0 justify-center">
+                          <p className={`text-xs font-bold truncate ${parseInt(currentEpisode) === ep.episode_number && parseInt(currentSeason) === selectedSeason ? 'text-primary' : 'text-white'}`}>
+                            {ep.episode_number}. {ep.name}
+                          </p>
+                          <p className="text-[10px] text-on-surface-variant mt-0.5">{ep.runtime || '?'}m</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

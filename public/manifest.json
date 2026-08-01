@@ -3,13 +3,13 @@
   "name": "Aetheric Cinema",
   "icons": [
     {
-      "src": "/vite.svg",
-      "type": "image/svg+xml",
+      "src": "https://ui-avatars.com/api/?name=A+C&background=0a061d&color=d4a5ff&size=192&font-size=0.5",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/vite.svg",
-      "type": "image/svg+xml",
+      "src": "https://ui-avatars.com/api/?name=A+C&background=0a061d&color=d4a5ff&size=512&font-size=0.5",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ],
