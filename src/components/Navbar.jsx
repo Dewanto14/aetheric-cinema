@@ -181,15 +181,7 @@ export default function Navbar() {
     setDeferredPrompt(null);
   };
 
-  const handleFilterSelect = (genreId, genreName, langId) => {
-    setIsFilterOpen(false);
-    const params = new URLSearchParams();
-    if (genreId) params.set('genre', genreId);
-    if (genreName) params.set('name', genreName);
-    if (langId) params.set('lang', langId);
-    
-    navigate({ search: params.toString() ? `?${params.toString()}` : '' });
-  };
+
 
   const handleNotifClick = () => {
     const newState = !isNotifOpen;
