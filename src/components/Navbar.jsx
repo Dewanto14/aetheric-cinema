@@ -21,6 +21,9 @@ export default function Navbar() {
   const filterRef = useRef(null);
   const notifRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isInstallable, setIsInstallable] = useState(false);
 
   const currentGenreId = new URLSearchParams(location.search).get('genre');
   const currentLang = new URLSearchParams(location.search).get('lang');
@@ -80,6 +83,17 @@ export default function Navbar() {
     if (userObj) {
       fetchNotifications();
     }
+
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, [location.pathname]);
 
   useEffect(() => {
@@ -155,6 +169,26 @@ export default function Navbar() {
     setIsMobileMenuOpen(false);
     setIsFilterOpen(false);
     setIsNotifOpen(false);
+  };
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setIsInstallable(false);
+    }
+    setDeferredPrompt(null);
+  };
+
+  const handleFilterSelect = (genreId, genreName, langId) => {
+    setIsFilterOpen(false);
+    const params = new URLSearchParams();
+    if (genreId) params.set('genre', genreId);
+    if (genreName) params.set('name', genreName);
+    if (langId) params.set('lang', langId);
+    
+    navigate({ search: params.toString() ? `?${params.toString()}` : '' });
   };
 
   const handleNotifClick = () => {
@@ -342,6 +376,17 @@ export default function Navbar() {
                 <button onClick={() => { setHasUnread(false); localStorage.setItem('lastReadNotificationAt', Date.now().toString()); }} className="text-[10px] text-primary hover:text-white transition-colors uppercase tracking-wider font-bold">Mark all read</button>
               </div>
               <div className="flex flex-col overflow-y-auto custom-scrollbar p-2">
+                {isInstallable && (
+                  <div onClick={handleInstallClick} className="p-3 mb-1 rounded-xl hover:bg-white/5 transition-colors cursor-pointer flex gap-3 group bg-primary/20 border border-primary/30">
+                    <div className="w-8 h-8 rounded-full bg-primary/30 flex items-center justify-center shrink-0 border border-primary/50 mt-1">
+                      <MonitorPlay size={16} className="text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-white font-bold mb-1 group-hover:text-primary transition-colors">Install Aetheric App 📱</p>
+                      <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed">Dapatkan pengalaman aplikasi Native. Nonton lebih mulus dan cepat.</p>
+                    </div>
+                  </div>
+                )}
                 {liveNotifications.map((notif) => (
                   <div key={notif.id} className="p-3 mb-1 rounded-xl hover:bg-white/5 transition-colors cursor-pointer flex gap-3 group">
                     <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/30 mt-1">
