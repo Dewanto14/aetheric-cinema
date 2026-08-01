@@ -69,9 +69,9 @@ export default function History() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-card-gap">
           {history.map((movie, index) => (
             <Link to={`/play/${movie.id}`} key={`${movie.id}-${index}`} className="group relative flex flex-col gap-3">
-              <div className="relative aspect-video rounded-lg overflow-hidden glass bg-white/5 border border-white/10 bloom-hover transition-all duration-300">
+              <div className="relative aspect-video w-full rounded-lg overflow-hidden glass bg-white/5 border border-white/10 bloom-hover transition-all duration-300">
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" 
-                     style={{ backgroundImage: `url('${getImageUrl(movie.poster_path, 'w500')}')` }}></div>
+                     style={{ backgroundImage: `url('${getImageUrl(movie.backdrop_path || movie.poster_path, 'w500')}')` }}></div>
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-[2px] flex items-center justify-center">
                   <PlayCircle size={36} className="text-white drop-shadow-lg" />
                 </div>

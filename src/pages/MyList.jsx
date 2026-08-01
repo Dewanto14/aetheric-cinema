@@ -85,10 +85,10 @@ export default function MyList() {
           
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-card-gap pb-4 hide-scrollbar">
             {history.map((movie) => (
-              <Link to={`/play/${movie.id}`} key={movie.id} className="group relative flex flex-col gap-3 min-w-[160px] md:min-w-[280px] snap-start shrink-0">
-                <div className="relative aspect-video rounded-lg overflow-hidden glass bg-white/5 border border-white/10 bloom-hover transition-all duration-300">
+              <Link to={`/play/${movie.id}`} key={movie.id} className="group relative flex flex-col gap-3 w-[160px] md:w-[280px] snap-start shrink-0">
+                <div className="relative aspect-video w-full rounded-lg overflow-hidden glass bg-white/5 border border-white/10 bloom-hover transition-all duration-300">
                   <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" 
-                       style={{ backgroundImage: `url('${getImageUrl(movie.poster_path, 'w500')}')` }}></div>
+                       style={{ backgroundImage: `url('${getImageUrl(movie.backdrop_path || movie.poster_path, 'w500')}')` }}></div>
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-[2px] flex items-center justify-center">
                     <PlayCircle size={36} className="text-white drop-shadow-lg" />
                   </div>
