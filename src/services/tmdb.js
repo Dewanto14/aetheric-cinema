@@ -34,5 +34,12 @@ export const discoverMovies = (genreId) => fetchFromTMDB('/discover/movie', { wi
 export const discoverTV = (genreId) => fetchFromTMDB('/discover/tv', { with_genres: genreId });
 export const discoverAnime = (genreId) => fetchFromTMDB('/discover/tv', { with_genres: genreId ? `16,${genreId}` : '16', with_original_language: 'ja' });
 export const getPersonDetails = (id) => fetchFromTMDB(`/person/${id}`, { append_to_response: 'combined_credits' });
+export const getDramaByRegion = (language) => fetchFromTMDB('/discover/tv', { with_original_language: language, sort_by: 'popularity.desc' });
+export const discoverDramas = (language, genreId) => {
+  const params = { sort_by: 'popularity.desc' };
+  if (language) params.with_original_language = language;
+  if (genreId) params.with_genres = genreId;
+  return fetchFromTMDB('/discover/tv', params);
+};
 
 export const getImageUrl = (path, size = 'original') => path ? `https://image.tmdb.org/t/p/${size}${path}` : '';

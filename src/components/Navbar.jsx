@@ -23,7 +23,16 @@ export default function Navbar() {
   const mobileMenuRef = useRef(null);
 
   const currentGenreId = new URLSearchParams(location.search).get('genre');
-  const showFilter = ['/', '/series', '/anime'].includes(location.pathname);
+  const currentLang = new URLSearchParams(location.search).get('lang');
+  const showFilter = ['/', '/series', '/anime', '/dramas'].includes(location.pathname);
+
+  const regions = [
+    { id: 'ko', name: 'Korean (Drakor)' },
+    { id: 'zh', name: 'Chinese (Dracin)' },
+    { id: 'ja', name: 'Japanese (Dorama)' },
+    { id: 'th', name: 'Thai (Lakorn)' },
+    { id: 'tr', name: 'Turkish' }
+  ];
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -37,7 +46,7 @@ export default function Navbar() {
     
     if (location.pathname === '/') {
       getGenres().then(data => setGenres(data.genres || []));
-    } else if (location.pathname === '/series') {
+    } else if (location.pathname === '/series' || location.pathname === '/dramas') {
       getTVGenres().then(data => setGenres(data.genres || []));
     } else if (location.pathname === '/anime') {
       getTVGenres().then(data => {
@@ -105,13 +114,14 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [searchRef, filterRef, notifRef, mobileMenuRef]);
 
-  const handleGenreSelect = (genreId, genreName) => {
+  const handleFilterSelect = (genreId, genreName, langId) => {
     setIsFilterOpen(false);
-    if (genreId) {
-      navigate({ search: `?genre=${genreId}&name=${encodeURIComponent(genreName)}` });
-    } else {
-      navigate({ search: '' });
-    }
+    const params = new URLSearchParams();
+    if (genreId) params.set('genre', genreId);
+    if (genreName) params.set('name', genreName);
+    if (langId) params.set('lang', langId);
+    
+    navigate({ search: params.toString() ? `?${params.toString()}` : '' });
   };
 
   const handleResultClick = (item) => {
@@ -200,6 +210,7 @@ export default function Navbar() {
           <Link to="/" className="text-on-surface-variant hover:text-primary transition-colors font-bold">Movies</Link>
           <Link to="/series" className="text-on-surface-variant hover:text-primary transition-colors font-bold">Series</Link>
           <Link to="/anime" className="text-on-surface-variant hover:text-primary transition-colors font-bold">Anime</Link>
+          <Link to="/dramas" className="text-on-surface-variant hover:text-primary transition-colors font-bold">Dramas</Link>
           <Link to="/mylist" className="text-on-surface-variant hover:text-primary transition-colors font-bold">My List</Link>
         </div>
       </div>
@@ -256,12 +267,40 @@ export default function Navbar() {
             {/* Premium Filter Dropdown */}
             {isFilterOpen && (
               <div className="absolute top-12 -right-[100px] sm:right-0 w-[240px] glass-panel bg-[#0a061d]/95 backdrop-blur-3xl z-[200] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[70vh] sm:max-h-96">
-                <div className="px-5 py-3 border-b border-white/5 bg-white/5 sticky top-0 z-10 backdrop-blur-xl">
+                
+                {location.pathname === '/dramas' && (
+                  <>
+                    <div className="px-5 py-2 border-b border-white/5 bg-white/5 sticky top-0 z-10 backdrop-blur-xl">
+                      <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Select Region</span>
+                    </div>
+                    <div className="overflow-y-auto custom-scrollbar p-2 max-h-32">
+                      <div 
+                        onClick={() => handleFilterSelect(currentGenreId, new URLSearchParams(location.search).get('name'), null)} 
+                        className={`px-3 py-2 rounded-xl text-xs cursor-pointer flex items-center justify-between transition-all mb-1 ${!currentLang ? 'bg-primary/20 text-primary font-bold border border-primary/20' : 'text-on-surface hover:bg-white/5 hover:text-white'}`}
+                      >
+                        All Regions
+                        {!currentLang && <Check size={14} className="text-primary" />}
+                      </div>
+                      {regions.map(r => (
+                        <div 
+                          key={r.id} 
+                          onClick={() => handleFilterSelect(currentGenreId, new URLSearchParams(location.search).get('name'), r.id)} 
+                          className={`px-3 py-2 rounded-xl text-xs cursor-pointer flex items-center justify-between transition-all mb-1 ${currentLang === r.id ? 'bg-primary/20 text-primary font-bold border border-primary/20' : 'text-on-surface hover:bg-white/5 hover:text-white'}`}
+                        >
+                          {r.name}
+                          {currentLang === r.id && <Check size={14} className="text-primary" />}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                <div className="px-5 py-2 border-b border-t border-white/5 bg-white/5 sticky z-10 backdrop-blur-xl">
                   <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Select Genre</span>
                 </div>
                 <div className="overflow-y-auto custom-scrollbar p-2">
                   <div 
-                    onClick={() => handleGenreSelect(null, null)} 
+                    onClick={() => handleFilterSelect(null, null, currentLang)} 
                     className={`px-3 py-2.5 rounded-xl text-sm cursor-pointer flex items-center justify-between transition-all mb-1 ${!currentGenreId ? 'bg-primary/20 text-primary font-bold shadow-[inset_0_0_15px_rgba(212,165,255,0.15)] border border-primary/20' : 'text-on-surface hover:bg-white/5 hover:text-white'}`}
                   >
                     All Genres
@@ -270,7 +309,7 @@ export default function Navbar() {
                   {genres.map(g => (
                     <div 
                       key={g.id} 
-                      onClick={() => handleGenreSelect(g.id, g.name)} 
+                      onClick={() => handleFilterSelect(g.id, g.name, currentLang)} 
                       className={`px-3 py-2.5 rounded-xl text-sm cursor-pointer flex items-center justify-between transition-all mb-1 ${currentGenreId == g.id ? 'bg-primary/20 text-primary font-bold shadow-[inset_0_0_15px_rgba(212,165,255,0.15)] border border-primary/20' : 'text-on-surface hover:bg-white/5 hover:text-white'}`}
                     >
                       {g.name}

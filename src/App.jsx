@@ -7,6 +7,7 @@ import MovieDetail from './pages/MovieDetail';
 import Player from './pages/Player';
 import Series from './pages/Series';
 import Anime from './pages/Anime';
+import Dramas from './pages/Dramas';
 import MyList from './pages/MyList';
 import History from './pages/History';
 import Navbar from './components/Navbar';
@@ -80,6 +81,7 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/series" element={<Series />} />
         <Route path="/anime" element={<Anime />} />
+        <Route path="/dramas" element={<Dramas />} />
         <Route path="/mylist" element={<MyList />} />
         <Route path="/history" element={<History />} />
         <Route path="/movie/:id" element={<MovieDetail />} />
