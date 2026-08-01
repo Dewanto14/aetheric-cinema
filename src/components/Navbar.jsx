@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { getLatestNotifications } from '../services/db';
-import { Search, Bell, X, Filter, Menu, Film, Tv, PlaySquare, Bookmark, Check } from 'lucide-react';
+import { Search, Bell, X, Filter, Menu, Film, Tv, PlaySquare, Bookmark, Check, MonitorPlay } from 'lucide-react';
 import { searchMulti, getImageUrl, getGenres, getTVGenres } from '../services/tmdb';
 
 export default function Navbar() {
@@ -194,6 +194,10 @@ export default function Navbar() {
               <Link to="/anime" onClick={() => setIsMobileMenuOpen(false)} className={`px-5 py-3.5 flex items-center gap-3 transition-colors font-bold ${location.pathname === '/anime' ? 'text-primary bg-primary/10 border-l-2 border-primary' : 'text-on-surface hover:bg-white/5 hover:text-primary border-l-2 border-transparent'}`}>
                 <PlaySquare size={18} className={location.pathname === '/anime' ? 'text-primary' : 'text-on-surface-variant'} />
                 Anime
+              </Link>
+              <Link to="/dramas" onClick={() => setIsMobileMenuOpen(false)} className={`px-5 py-3.5 flex items-center gap-3 transition-colors font-bold ${location.pathname === '/dramas' ? 'text-primary bg-primary/10 border-l-2 border-primary' : 'text-on-surface hover:bg-white/5 hover:text-primary border-l-2 border-transparent'}`}>
+                <MonitorPlay size={18} className={location.pathname === '/dramas' ? 'text-primary' : 'text-on-surface-variant'} />
+                Dramas
               </Link>
               <Link to="/mylist" onClick={() => setIsMobileMenuOpen(false)} className={`px-5 py-3.5 flex items-center gap-3 transition-colors font-bold ${location.pathname === '/mylist' ? 'text-primary bg-primary/10 border-l-2 border-primary' : 'text-on-surface hover:bg-white/5 hover:text-primary border-l-2 border-transparent'}`}>
                 <Bookmark size={18} className={location.pathname === '/mylist' ? 'text-primary' : 'text-on-surface-variant'} />
