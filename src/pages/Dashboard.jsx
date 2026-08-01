@@ -184,6 +184,22 @@ export default function Dashboard() {
 
       {!loading && (
         <>
+          {/* Install App Tip Banner */}
+          <section className="px-4 md:px-gutter lg:px-container-padding mb-8">
+            <div className="glass-panel p-4 md:p-6 rounded-2xl bg-gradient-to-r from-primary/10 to-transparent border border-primary/20 flex flex-col sm:flex-row items-center gap-4 sm:justify-between shadow-[0_0_20px_rgba(212,165,255,0.1)] relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-[50px] pointer-events-none"></div>
+              <div className="flex items-center gap-4 z-10">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/30 text-primary">
+                  <span className="material-symbols-outlined text-2xl">install_mobile</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-sm md:text-base mb-1">Tips: Install Aetheric di HP Lu! 📱</h3>
+                  <p className="text-on-surface-variant text-xs md:text-sm">Biar nonton makin mulus ala Netflix, klik menu browser (titik tiga) lalu pilih <strong>"Add to Home screen"</strong> (Tambahkan ke Layar Utama).</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {renderContinueWatchingRow("Continue Watching", watchHistory)}
           {renderMovieRow("Trending Now", trending.slice(1))}
           {renderMovieRow("Popular Movies", popular)}
