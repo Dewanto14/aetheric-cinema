@@ -3,11 +3,29 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    background-color: #101415;
+    min-height: 100%;
+  }
   body {
+    background-color: #101415;
+    @apply text-on-background font-body-md overflow-x-hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     background: radial-gradient(circle at top right, #2c1a3d, #101415), 
                 radial-gradient(circle at bottom left, #1a1b3d, #101415);
-    background-attachment: fixed;
-    @apply text-on-background font-body-md overflow-x-hidden;
+    z-index: -9999;
+    pointer-events: none;
   }
 }
 
