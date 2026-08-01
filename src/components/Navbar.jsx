@@ -289,30 +289,34 @@ export default function Navbar() {
             {hasUnread && <span className="absolute top-0 right-0 w-2 h-2 bg-error rounded-full animate-pulse"></span>}
           </button>
           
+          {/* Premium Notification Dropdown */}
           {isNotifOpen && (
-            <div className="fixed sm:absolute top-20 sm:top-12 right-[5%] sm:right-0 w-[90%] sm:w-80 glass-panel bg-[#100563]/95 backdrop-blur-3xl z-[200] rounded-xl shadow-2xl border-white/20 overflow-hidden flex flex-col">
-              <div className="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
-                <span className="font-bold text-white flex items-center gap-2"><Bell size={16} className="text-primary"/> Notifications</span>
-                <button onClick={() => { setHasUnread(false); localStorage.setItem('lastReadNotificationAt', Date.now().toString()); }} className="text-xs text-primary hover:text-white transition-colors">Mark all read</button>
+            <div className="fixed sm:absolute top-20 sm:top-12 right-[5%] sm:right-0 w-[90%] sm:w-[340px] glass-panel bg-[#0a061d]/95 backdrop-blur-3xl z-[200] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden flex flex-col max-h-[80vh] sm:max-h-96">
+              <div className="px-5 py-3 border-b border-white/5 bg-white/5 flex justify-between items-center sticky top-0 z-10 backdrop-blur-xl">
+                <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest flex items-center gap-2">
+                  <Bell size={12} className="text-primary"/> Notifications
+                </span>
+                <button onClick={() => { setHasUnread(false); localStorage.setItem('lastReadNotificationAt', Date.now().toString()); }} className="text-[10px] text-primary hover:text-white transition-colors uppercase tracking-wider font-bold">Mark all read</button>
               </div>
-              <div className="flex flex-col max-h-80 overflow-y-auto custom-scrollbar">
+              <div className="flex flex-col overflow-y-auto custom-scrollbar p-2">
                 {liveNotifications.map((notif) => (
-                  <div key={notif.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer flex gap-3 group">
-                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/30">
+                  <div key={notif.id} className="p-3 mb-1 rounded-xl hover:bg-white/5 transition-colors cursor-pointer flex gap-3 group">
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0 border border-primary/30 mt-1">
                       <span className="text-primary text-[14px]">!</span>
                     </div>
                     <div>
-                      <p className="text-sm text-white font-bold mb-1">{notif.title}</p>
-                      <p className="text-xs text-on-surface-variant line-clamp-2">{notif.message}</p>
-                      <p className="text-[10px] text-white/40 mt-2">{new Date(notif.createdAt).toLocaleDateString()}</p>
+                      <p className="text-sm text-white font-bold mb-1 group-hover:text-primary transition-colors">{notif.title}</p>
+                      <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed">{notif.message}</p>
+                      <p className="text-[10px] text-white/30 mt-2 font-mono">{new Date(notif.createdAt).toLocaleDateString()}</p>
                     </div>
                   </div>
                 ))}
-                <div onClick={() => { navigate('/profile'); setIsNotifOpen(false); }} className="p-4 hover:bg-white/5 transition-colors cursor-pointer flex gap-3">
-                  <div className="w-2 h-2 mt-1.5 rounded-full bg-error shrink-0 animate-pulse shadow-[0_0_8px_rgba(255,0,0,0.8)]"></div>
-                  <div>
-                    <p className="text-sm text-white font-bold mb-1">Welcome to Aetheric Cinema! 🍿</p>
-                    <p className="text-xs text-on-surface-variant">Halo! Saya <strong>Dewanto</strong>, developer di balik web ini. Selamat datang di Aetheric Cinema! Nikmati ribuan film gratis berkualitas HD tanpa batas.</p>
+                <div onClick={() => { navigate('/profile'); setIsNotifOpen(false); }} className="p-3 mb-1 rounded-xl hover:bg-white/5 transition-colors cursor-pointer flex gap-3 group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="w-2 h-2 mt-2 rounded-full bg-error shrink-0 animate-pulse shadow-[0_0_8px_rgba(255,0,0,0.8)] relative z-10"></div>
+                  <div className="relative z-10">
+                    <p className="text-sm text-white font-bold mb-1 group-hover:text-primary transition-colors">Welcome to Aetheric Cinema! 🍿</p>
+                    <p className="text-xs text-on-surface-variant leading-relaxed">Halo! Saya <strong>Dewanto</strong>, developer di balik web ini. Selamat datang di Aetheric Cinema! Nikmati ribuan film gratis berkualitas HD tanpa batas.</p>
                   </div>
                 </div>
               </div>
