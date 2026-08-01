@@ -1,5 +1,5 @@
 import { db, isFirebaseConfigured } from './firebase';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs, getCountFromServer, addDoc, orderBy, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs, getCountFromServer, addDoc, orderBy, onSnapshot, deleteDoc } from 'firebase/firestore';
 
 // Fallback logic uses localStorage if Firebase is not configured
 
@@ -45,6 +45,42 @@ export const getAllUsers = async () => {
     }
   }
   return [];
+};
+
+export const deleteAllNonAdminUsers = async () => {
+  if (isFirebaseConfigured()) {
+    try {
+      const coll = collection(db, 'users');
+      const snapshot = await getDocs(coll);
+      
+      const deletePromises = [];
+      snapshot.forEach(userDoc => {
+        const data = userDoc.data();
+        if (data.email !== 'dewantomaulana14@gmail.com' && data.email !== 'user@aetheric.cinema') {
+          deletePromises.push(deleteDoc(doc(db, 'users', userDoc.id)));
+        }
+      });
+      
+      await Promise.all(deletePromises);
+      return true;
+    } catch (e) {
+      console.error("Failed to delete users", e);
+      return false;
+    }
+  }
+  
+  // Fallback to localStorage
+  try {
+    const usersStr = localStorage.getItem('mock_users');
+    if (usersStr) {
+      const users = JSON.parse(usersStr);
+      const filtered = users.filter(u => u.email === 'dewantomaulana14@gmail.com' || u.email === 'user@aetheric.cinema');
+      localStorage.setItem('mock_users', JSON.stringify(filtered));
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
 };
 
 export const submitContactMessage = async (name, email, message) => {

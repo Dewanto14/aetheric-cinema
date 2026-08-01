@@ -221,7 +221,27 @@ export default function AdminDashboard() {
                   <span className="material-symbols-outlined">group</span>
                   Registered Users Directory
                 </h3>
-                <p className="text-on-surface-variant text-sm mt-1">Total: {userCount} / 200 users</p>
+                <div className="flex justify-between items-center mt-1">
+                  <p className="text-on-surface-variant text-sm">Total: {userCount} / 200 users</p>
+                  <button 
+                    onClick={async () => {
+                      if (window.confirm('Are you sure you want to delete all non-admin users? This action cannot be undone.')) {
+                        const { deleteAllNonAdminUsers } = await import('../services/db');
+                        const success = await deleteAllNonAdminUsers();
+                        if (success) {
+                          alert('All non-admin users have been deleted.');
+                          window.location.reload();
+                        } else {
+                          alert('Failed to delete users.');
+                        }
+                      }
+                    }}
+                    className="px-3 py-1.5 bg-error/20 text-error hover:bg-error hover:text-white rounded-lg text-xs font-bold transition-colors border border-error/50 flex items-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">delete_forever</span>
+                    Reset Non-Admin Users
+                  </button>
+                </div>
               </div>
               
               <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
