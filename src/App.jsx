@@ -18,6 +18,7 @@ import EditProfile from './pages/EditProfile';
 import HelpCenter from './pages/HelpCenter';
 import ResetPassword from './pages/ResetPassword';
 import PersonDetail from './pages/PersonDetail';
+import DownloadApp from './pages/DownloadApp';
 import MaintenanceScreen from './components/MaintenanceScreen';
 import { listenToSiteSettings } from './services/db';
 
@@ -93,6 +94,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/help" element={<HelpCenter />} />
         <Route path="/person/:id" element={<PersonDetail />} />
+        <Route path="/app" element={<DownloadApp />} />
         <Route path="/play/:id" element={<ProtectedRoute><Player /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

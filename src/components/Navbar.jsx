@@ -229,6 +229,10 @@ export default function Navbar() {
                 <Bookmark size={18} className={location.pathname === '/mylist' ? 'text-primary' : 'text-on-surface-variant'} />
                 My List
               </Link>
+              <Link to="/app" onClick={() => setIsMobileMenuOpen(false)} className={`px-5 py-3.5 flex items-center gap-3 transition-colors font-bold bg-primary/10 border-t border-white/10 ${location.pathname === '/app' ? 'text-primary border-l-2 border-primary' : 'text-primary hover:bg-primary/20 border-l-2 border-transparent'}`}>
+                <MonitorPlay size={18} className="text-primary" />
+                Download App
+              </Link>
             </div>
           )}
         </div>
@@ -242,6 +246,10 @@ export default function Navbar() {
           <Link to="/anime" className="text-on-surface-variant hover:text-primary transition-colors font-bold">Anime</Link>
           <Link to="/dramas" className="text-on-surface-variant hover:text-primary transition-colors font-bold">Dramas</Link>
           <Link to="/mylist" className="text-on-surface-variant hover:text-primary transition-colors font-bold">My List</Link>
+          <Link to="/app" className="text-primary hover:text-white transition-colors font-bold bg-primary/20 hover:bg-primary/30 px-4 py-1.5 rounded-full border border-primary/30 flex items-center gap-2 text-sm shadow-[0_0_15px_rgba(212,165,255,0.2)]">
+            <MonitorPlay size={16}/>
+            App
+          </Link>
         </div>
       </div>
       
