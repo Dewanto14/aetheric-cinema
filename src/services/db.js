@@ -152,6 +152,8 @@ export const listenToSiteSettings = (callback) => {
     return onSnapshot(docRef, (doc) => {
       if (doc.exists()) {
         callback(doc.data());
+      } else {
+        callback({ maintenanceMode: false });
       }
     });
   }

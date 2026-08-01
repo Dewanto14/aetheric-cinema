@@ -204,13 +204,13 @@ export default function Player() {
               </div>
             </div>
 
-            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 shadow-[0_0_60px_rgba(212,165,255,0.2)] group">
+            <div className="relative w-full rounded-xl overflow-hidden bg-surface-container-lowest/40 backdrop-blur-3xl border border-white/20 shadow-[0_0_60px_rgba(212,165,255,0.2)] group" style={{ paddingBottom: '56.25%', height: 0 }}>
               
               {/* Actual iframe embedding player server */}
               <iframe
                 key={`${activeServer.id}-${id}-${season}-${episode}`}
                 src={activeServer.getUrl(type, id, season, episode)}
-                className="absolute inset-0 w-full h-full border-0 z-10"
+                className="absolute top-0 left-0 w-full h-full border-0 z-10"
                 allowFullScreen
                 allow="autoplay; encrypted-media; picture-in-picture"
                 title="Movie Player"

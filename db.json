@@ -2,9 +2,10 @@
   "users": [
     {
       "id": 1,
-      "name": "User",
+      "name": "Admin",
       "email": "user@aetheric.cinema",
-      "avatar": "U"
+      "avatar": "U",
+      "role": "admin"
     },
     {
       "email": "dewantomaulana14@gmail.com",
@@ -12,63 +13,9 @@
       "avatar": "https://lh3.googleusercontent.com/aida-public/AB6AXuDRHp8BUhbtNBwJd9gSUGt3qNehRdbFWlBFpeW7DW4KsLPAtiaKzzBIxAydSs1Va5umpWSmhirvRir9aqbm0RkPF0EouKR3vNa2pqoB9qdAaHpJdl_tlF0yrbsIz27JqZBFU2AaO31Y3E80IPV6-fAHZs4bsl080KelPCkxK2894H9Qcp5gboKsSOfeJDYEWHMNjjUNL6Bv3hFRSxa2NfRpDJp7itYpk1yPe3oGPpSrwr-OM5u47uz3vA",
       "memberSince": "2026-07-29T13:46:57.675Z",
       "watchTime": 0,
-      "id": 2
-    },
-    {
-      "email": "065002300002@std.trisakti.ac.id",
-      "name": "Stardust Voyager",
-      "avatar": "https://lh3.googleusercontent.com/aida-public/AB6AXuDRHp8BUhbtNBwJd9gSUGt3qNehRdbFWlBFpeW7DW4KsLPAtiaKzzBIxAydSs1Va5umpWSmhirvRir9aqbm0RkPF0EouKR3vNa2pqoB9qdAaHpJdl_tlF0yrbsIz27JqZBFU2AaO31Y3E80IPV6-fAHZs4bsl080KelPCkxK2894H9Qcp5gboKsSOfeJDYEWHMNjjUNL6Bv3hFRSxa2NfRpDJp7itYpk1yPe3oGPpSrwr-OM5u47uz3vA",
-      "memberSince": "2026-07-29T13:47:55.834Z",
-      "watchTime": 0,
-      "id": 3
-    },
-    {
-      "email": "putracocland@gmail.com",
-      "name": "Stardust Voyager",
-      "avatar": "https://lh3.googleusercontent.com/aida-public/AB6AXuDRHp8BUhbtNBwJd9gSUGt3qNehRdbFWlBFpeW7DW4KsLPAtiaKzzBIxAydSs1Va5umpWSmhirvRir9aqbm0RkPF0EouKR3vNa2pqoB9qdAaHpJdl_tlF0yrbsIz27JqZBFU2AaO31Y3E80IPV6-fAHZs4bsl080KelPCkxK2894H9Qcp5gboKsSOfeJDYEWHMNjjUNL6Bv3hFRSxa2NfRpDJp7itYpk1yPe3oGPpSrwr-OM5u47uz3vA",
-      "memberSince": "2026-07-29T13:50:20.124Z",
-      "watchTime": 0,
-      "id": 4
+      "id": 2,
+      "role": "admin"
     }
   ],
-  "watchlist": [
-    {
-      "id": 1275779,
-      "title": "Disclosure Day",
-      "poster_path": "/AnJ8IQJI23hNpYXVNaythu061Ru.jpg",
-      "media_type": "movie"
-    },
-    {
-      "title": "Souryo to Majiwaru Shikiyoku no Yoru ni...",
-      "poster_path": "/ueI9EeoRdMVa7hWEm21nQEU8Zv3.jpg",
-      "media_type": "tv",
-      "movieId": 70998,
-      "userId": 2,
-      "id": 1275780
-    },
-    {
-      "title": "Silo",
-      "poster_path": "/gMYZZvnkVNTqSVnVCphWbPXwWwb.jpg",
-      "media_type": "tv",
-      "movieId": 125988,
-      "userId": 2,
-      "id": 1275781
-    },
-    {
-      "title": "Supergirl",
-      "poster_path": "/1QCWdqzTfh2x9UylVpspIU6QTuM.jpg",
-      "media_type": "movie",
-      "movieId": 1081003,
-      "userId": 2,
-      "id": 1275782
-    },
-    {
-      "title": "Mushoku Tensei: Jobless Reincarnation",
-      "poster_path": "/gLKOYIMyKlUHW0SVdskhgf9C0yy.jpg",
-      "media_type": "tv",
-      "movieId": 94664,
-      "userId": 4,
-      "id": 1275783
-    }
-  ]
+  "watchlist": []
 }
