@@ -14,7 +14,23 @@ export default function HelpCenter() {
   const [emailForm, setEmailForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [user, setUser] = useState(null);
   const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const userObj = JSON.parse(userStr);
+        setUser(userObj);
+        setEmailForm(prev => ({
+          ...prev,
+          name: userObj.name || '',
+          email: userObj.email || ''
+        }));
+      } catch (e) {}
+    }
+  }, []);
 
   useEffect(() => {
     if (chatEndRef.current) {
@@ -321,11 +337,11 @@ export default function HelpCenter() {
               <form onSubmit={handleEmailSubmit} className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Name</label>
-                  <input type="text" value={emailForm.name} onChange={(e) => setEmailForm({...emailForm, name: e.target.value})} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50" placeholder="Your name" />
+                  <input type="text" value={emailForm.name} onChange={(e) => !user && setEmailForm({...emailForm, name: e.target.value})} readOnly={!!user} required className={`w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50 ${user ? 'opacity-50 cursor-not-allowed bg-black/20' : ''}`} placeholder="Your name" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Email Address</label>
-                  <input type="email" value={emailForm.email} onChange={(e) => setEmailForm({...emailForm, email: e.target.value})} required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50" placeholder="your@email.com" />
+                  <input type="email" value={emailForm.email} onChange={(e) => !user && setEmailForm({...emailForm, email: e.target.value})} readOnly={!!user} required className={`w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50 ${user ? 'opacity-50 cursor-not-allowed bg-black/20' : ''}`} placeholder="your@email.com" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-on-surface-variant mb-1 uppercase tracking-wider">Message</label>
